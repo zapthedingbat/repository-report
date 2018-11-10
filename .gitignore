@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log
+package-lock.json
+
+.env
+
+# IDE Settings
+.editorconfig
+.vscode
+.nvmrc
