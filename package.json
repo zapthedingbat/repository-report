@@ -1,0 +1,29 @@
+{
+  "name": "github-tech-report",
+  "version": "0.0.1",
+  "description": "Provides reporting of technologies in use across a github organisation.",
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^6.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zapthedingbat/github-tech-report.git"
+  },
+  "keywords": [
+    "github"
+  ],
+  "author": "Sam Greenhalgh <sam@zapthedingbat.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zapthedingbat/github-tech-report/issues"
+  },
+  "homepage": "https://github.com/zapthedingbat/github-tech-report#readme",
+  "engines": {
+    "node": ">= 10.10.0"
+  }
+}

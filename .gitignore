@@ -3,6 +3,7 @@ npm-debug.log
 package-lock.json
 
 .env
+.keys
 
 # IDE Settings
 .editorconfig
