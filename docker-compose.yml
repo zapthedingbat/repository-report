@@ -1,0 +1,7 @@
+version: "3"
+services:
+  github-tech-report:
+    build: .
+    env_file: .env
+    volumes:
+      - ./.keys:/home/app/.keys/:ro
