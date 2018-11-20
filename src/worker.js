@@ -1,11 +1,22 @@
-const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
-const workingDirectory = require('./working-directory');
 const github = require('./github');
+const analyzer = require('./analyzer');
 
 // Load github app key
 const keyPath = path.join(__dirname, '../.keys/github-private-key.pem');
+
+function createGetFileContentsFn(token, owner, name, branch) {
+  return async function (path) {
+    return github.getFileContents(
+      token,
+      owner,
+      name,
+      branch,
+      path
+    );
+  }
+}
 
 async function worker() {
   
@@ -20,17 +31,27 @@ async function worker() {
     const installationRepositories = await github.get(installationToken.token, installation.repositories_url);
     for (const repository of installationRepositories.repositories) {
 
-      // Prepare the working directory to clone into
-      const localWorkingDirectory = workingDirectory.prepare(repository.owner.login, repository.name);
+      const files = await github.getTreeFiles(
+        installationToken.token,
+        repository.owner.login,
+        repository.name,
+        repository.default_branch
+      )
 
-      console.log(localWorkingDirectory);
+      if (!files.tree) {
+        continue;
+      }
 
-      // Clone repository to working directory
-      await github.clone(installationToken.token, repository.clone_url, localWorkingDirectory);
+      const filePaths = files.tree.map(file => file.path);
+      
+      const getFileContentsFn = createGetFileContentsFn(
+        installationToken.token,
+        repository.owner.login,
+        repository.name,
+        repository.default_branch
+      );
 
-      // TODO:
-      // - Find the dependencies of each repository
-      // - Record each dependency
+      await analyzer.analyze(filePaths, getFileContentsFn);
     }
   }
 };

@@ -2,11 +2,9 @@ const chai = require('chai');
 const sinon = require('sinon');
 const dotenv = require('dotenv');
 const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const worker = require('./worker');
-const workingDirectory = require('./working-directory');
 const github = require('./github');
+const analyzer = require('./analyzer');
+const worker = require('./worker');
 
 const expect = chai.expect
 
@@ -88,7 +86,7 @@ describe('Worker', function () {
     sinon.assert.calledWith(githubGet, 'test installation token', 'test repositories url 2');
   });
 
-  it('should clone all repositories', async function () {
+  it('should analyze all repositories', async function () {
     sandbox.stub(fs, 'readFileSync').returns('test key');
     sandbox.stub(process.env, 'GITHUB_APP_IDENTIFIER').value('test app id');
     sandbox.stub(github, 'getAppToken').resolves('test app token');
@@ -113,16 +111,17 @@ describe('Worker', function () {
         }
       ]
     });
-
-    const workingDirectoryPrepare = sandbox.stub(workingDirectory, 'prepare').returns('test working directory');
-    const githubClone = sandbox.stub(github, 'clone').resolves();
+    sandbox.stub(github, 'getTreeFiles').resolves({    
+      tree: [
+        { path: '/test/file-1' },
+        { path: '/test/file-2' }
+      ]
+    });
+    sandbox.stub(github, 'getFileContents').resolves({});
+    const analyzerAnalyze = sandbox.stub(analyzer, 'analyze').resolves();
 
     await worker();
 
-    sinon.assert.calledWith(workingDirectoryPrepare, 'test login 1', 'test name 1');
-    sinon.assert.calledWith(workingDirectoryPrepare, 'test login 2', 'test name 2');
-    sinon.assert.calledWith(githubClone, 'test installation token', 'test clone url 1', 'test working directory');
-    sinon.assert.calledWith(githubClone, 'test installation token', 'test clone url 2', 'test working directory');
+    sinon.assert.calledWith(analyzerAnalyze, ['/test/file-1', '/test/file-2'], sinon.match.func);
   });
-
 });

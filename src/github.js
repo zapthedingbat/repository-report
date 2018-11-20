@@ -34,17 +34,24 @@ async function getInstallations(token) {
   return get(token, 'https://api.github.com/app/installations');
 }
 
+async function getTreeFiles(token, owner, repo, branch) {
+  const url = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`;
+  return get(token, url);
+}
+
+async function getFileContents(token, owner, repo, branch, path) {
+  const encodedPath = encodeURIComponent(path);
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodedPath}?ref=${branch}`;
+  const file = await get(token, url);
+  return Buffer.from(file.content, 'base64').toString('utf8');
+}
+
 function clone(token, url, localWorkingDirectory) {
   const cloneUrl = new URL(url);
   cloneUrl.username = 'x-access-token';
   cloneUrl.password = token;
 
-  console.log(`Cloning ${cloneUrl.href} into ${localWorkingDirectory}`);
-
   return new Promise((resolve, reject) => {
-
-    console.log('spawn', spawn);
-
     const gitProcess = spawn('git', [
       'clone',
       cloneUrl.href,
@@ -59,25 +66,14 @@ function clone(token, url, localWorkingDirectory) {
       }
     });
   });
-
-  // const options = {
-  //   fetchOpts: {
-  //     callbacks: {
-  //       certificateCheck: function () { return 1; },
-  //       credentials: function () {
-  //         return NodeGit.Cred.userpassPlaintextNew('x-access-token', token);
-  //       }
-  //     }
-  //   }
-  // };
-  
-  // return ghGot.Clone(url, localWorkingDirectory, options);
 }
 
 module.exports = {
   clone,
   get,
-  getInstallations,
   getAppToken,
+  getFileContents,
+  getInstallations,
+  getTreeFiles,
   post,
 }
