@@ -23,6 +23,8 @@ async function worker() {
       // Prepare the working directory to clone into
       const localWorkingDirectory = workingDirectory.prepare(repository.owner.login, repository.name);
 
+      console.log(localWorkingDirectory);
+
       // Clone repository to working directory
       await github.clone(installationToken.token, repository.clone_url, localWorkingDirectory);
 

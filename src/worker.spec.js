@@ -18,7 +18,8 @@ describe('Worker', function () {
   });
 
   beforeEach(function () {
-    sandbox.mock(dotenv, 'config')
+    sandbox.stub(dotenv, 'config')
+    process.env.GITHUB_APP_IDENTIFIER = 'test app id';
   });
   
   afterEach(function () {

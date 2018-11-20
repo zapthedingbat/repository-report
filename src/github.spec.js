@@ -1,13 +1,13 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
-
+const { EventEmitter } = require('events');
 const expect = chai.expect;
 
 describe('GitHub', function () {
   let sandbox;
   let github;
-
+  
   before(function () {
     sandbox = sinon.createSandbox();
   });
@@ -15,48 +15,26 @@ describe('GitHub', function () {
   afterEach(function () {
     sandbox.restore();
   });
-
+  
   describe('Clone', function () {
-    let nodegit;
+    let childProcess;
 
     beforeEach(function () {
-      nodegit = {
-        Clone: sinon.stub(),
-        Cred: {
-          userpassPlaintextNew: sinon.stub()
-        }
-      }
+      childProcess = { spawn: sandbox.stub() };
       github = proxyquire('./github', {
-        'nodegit': nodegit
-      })
+        'child_process': childProcess
+      });
     })
 
     it('should git-clone the repository with the specified token', async function () {
-      github.clone('test token', 'test url', 'test working directory');
+      const testProcess = new EventEmitter();
+      childProcess.spawn.returns(testProcess);
       
-      sinon.assert.calledWithExactly(nodegit.Clone, 'test url', 'test working directory', sinon.match({
-        fetchOpts: {
-          callbacks: {
-            credentials: sinon.match.func
-          }
-        }
-      }));
-    });
+      const clonePromise = github.clone('test-token', 'http://test/url', 'test working directory');
+      testProcess.emit('close', 0);
+      await clonePromise;
 
-    it('should git-clone with the token credentials', async function () {
-      const testCredentials = {};
-      nodegit.Cred.userpassPlaintextNew.returns(testCredentials);
-      
-      github.clone('test token', 'test url', 'test working directory');
-
-      const fetchOptsCallbacks = nodegit.Clone.lastCall.args[2].fetchOpts.callbacks;
-      const certificateCheckCallback = fetchOptsCallbacks.certificateCheck;
-      const credentialsCallback = fetchOptsCallbacks.credentials;
-      const certificateCheck = certificateCheckCallback();
-      const credentials = credentialsCallback();
-      sinon.assert.calledWithExactly(nodegit.Cred.userpassPlaintextNew, 'x-access-token', 'test token');
-      expect(certificateCheck).to.equal(1);
-      expect(credentials).to.equal(testCredentials);
+      sinon.assert.calledWithExactly(childProcess.spawn, 'git', ["clone", "http://x-access-token:test-token@test/url", "test working directory"]);
     });
   });
 
