@@ -2,32 +2,49 @@ const fetch = require('node-fetch');
 const { spawn } = require('child_process');
 const { sign } = require('jsonwebtoken');
 
-function getAppToken(key, appId) {
-  const payload = {
-    iss: appId
-  }
-  return sign(payload, key, { algorithm: 'RS256', expiresIn: '5m' });
-}
-
-async function get(token, url) {
-  const response = await fetch(url, {
+function githubFetch(token, url, method) {
+  return fetch(url, {
+    method: method ? method : 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: "application/vnd.github.machine-man-preview+json"
     }
   })
-  return await response.json();
+}
+
+async function get(token, url) {
+  return (await githubFetch(token, url, 'GET')).json();
+}
+
+async function getPaginated(token, url, itemsFn) {
+
+  let nextUrl = url;
+  const items = [];
+
+  while (nextUrl) {
+    const response = await githubFetch(token, nextUrl, 'GET');
+    nextUrl = null;
+    const result = await response.json();
+    items.push(...itemsFn(result));
+    const linkHeader = response.headers.get('link');
+    let match;
+    if (linkHeader && (match = linkHeader.match(/<([^>]+)>; rel="next"/))) {
+      nextUrl = match[1];
+    }
+  }
+  
+  return items;
 }
 
 async function post(token, url) {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.github.machine-man-preview+json"
-    }
-  });
-  return await response.json();
+  return (await githubFetch(token, url, 'POST')).json();
+}
+
+function getAppToken(key, appId) {
+  const payload = {
+    iss: appId
+  }
+  return sign(payload, key, { algorithm: 'RS256', expiresIn: '5m' });
 }
 
 async function getInstallations(token) {
@@ -74,6 +91,7 @@ module.exports = {
   getAppToken,
   getFileContents,
   getInstallations,
+  getPaginated,
   getTreeFiles,
   post,
 }

@@ -21,16 +21,17 @@ function createGetFileContentsFn(token, owner, name, branch) {
 async function worker() {
   
   const appId = process.env.GITHUB_APP_IDENTIFIER;
+  const owner = process.env.GITHUB_OWNER;
   const key = fs.readFileSync(keyPath);
   const appToken = await github.getAppToken(key, appId);
   const installations = await github.getInstallations(appToken);
   
   for (const installation of installations) {
-
+    
     const installationToken = await github.post(appToken, installation.access_tokens_url);
-    const installationRepositories = await github.get(installationToken.token, installation.repositories_url);
-    for (const repository of installationRepositories.repositories) {
+    const installationRepositories = await github.getPaginated(installationToken.token, installation.repositories_url + '?type=sources', result => result.repositories);
 
+    for (const repository of installationRepositories.filter(repository => repository.owner.login === owner && repository.fork === false && repository.archived === false)) {
       const files = await github.getTreeFiles(
         installationToken.token,
         repository.owner.login,
@@ -51,7 +52,7 @@ async function worker() {
         repository.default_branch
       );
 
-      await analyzer.analyze(filePaths, getFileContentsFn);
+      await analyzer.analyzeDependencies(repository.full_name, filePaths, getFileContentsFn);
     }
   }
 };

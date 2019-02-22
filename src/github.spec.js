@@ -51,13 +51,14 @@ describe('GitHub', function () {
     })
 
     it('should get the given url with the authorization headers', async function () {
-      github.get('test token', 'test url');
-      
+      await github.get('test token', 'test url');
+
       sinon.assert.calledWithExactly(nodeFetch, 'test url', {
+        method: 'GET',
         headers: {
           Accept: "application/vnd.github.machine-man-preview+json",
           Authorization: "Bearer test token"
-        }
+        },
       });
     });
   });
@@ -78,10 +79,54 @@ describe('GitHub', function () {
       github.getInstallations('test token');
       
       sinon.assert.calledWithExactly(nodeFetch, 'https://api.github.com/app/installations', {
+        method: 'GET',
         headers: {
           Accept: "application/vnd.github.machine-man-preview+json",
           Authorization: "Bearer test token"
         }
+      });
+    });
+  });
+
+  describe('Get Paginated', function () {
+    let nodeFetch;
+    let github;
+
+    beforeEach(function () {
+      nodeFetch = sinon.stub();
+      github = proxyquire('./github', {
+        'node-fetch': nodeFetch
+      });
+    })
+
+    it('should get paginated results with the authorization headers', async function () {
+      const mockGetItems = sandbox.stub().returns(['test item']);
+      const mockHeaders = {
+        get: sinon.stub()
+          .onCall(0).returns('<page two>; rel="next"')
+          .onCall(1).returns('test link header') // no more pages
+      }
+      nodeFetch.returns({
+        headers: mockHeaders,
+        json: sinon.stub().resolves()
+      });
+      
+      await github.getPaginated('test token', 'test url', mockGetItems);
+      
+      sinon.assert.calledWithExactly(mockHeaders.get, 'link');
+      sinon.assert.calledWithExactly(nodeFetch, 'test url', {
+        method: "GET",
+        headers: {
+          Accept: "application/vnd.github.machine-man-preview+json",
+          Authorization: "Bearer test token"
+        },
+      });
+      sinon.assert.calledWithExactly(nodeFetch, 'page two', {
+        method: "GET",
+        headers: {
+          Accept: "application/vnd.github.machine-man-preview+json",
+          Authorization: "Bearer test token"
+        },
       });
     });
   });
@@ -99,9 +144,10 @@ describe('GitHub', function () {
     })
 
     it('should get the tree files', async function () {
-      github.getTreeFiles('test token', 'test owner', 'test repo', 'test branch');
+      await github.getTreeFiles('test token', 'test owner', 'test repo', 'test branch');
       
       sinon.assert.calledWithExactly(nodeFetch, 'https://api.github.com/repos/test owner/test repo/git/trees/test branch?recursive=1', {
+        method: 'GET',
         headers: {
           Accept: "application/vnd.github.machine-man-preview+json",
           Authorization: "Bearer test token"
@@ -131,6 +177,7 @@ describe('GitHub', function () {
       
       expect(actual).to.equal('test');
       sinon.assert.calledWithExactly(nodeFetch, 'https://api.github.com/repos/test owner/test repo/contents/test%2Fpath?ref=test branch', {
+        method: 'GET',
         headers: {
           Accept: "application/vnd.github.machine-man-preview+json",
           Authorization: "Bearer test token"
@@ -152,7 +199,7 @@ describe('GitHub', function () {
     })
 
     it('should create a JWT with the given key and appId', async function () {
-      github.getAppToken('test key', 'test app id');
+      await github.getAppToken('test key', 'test app id');
       
       sinon.assert.calledWithExactly(jsonwebtoken.sign, { iss: 'test app id' }, 'test key', { algorithm: 'RS256', expiresIn: '5m' });
     });

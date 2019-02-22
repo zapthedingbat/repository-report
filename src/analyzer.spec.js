@@ -2,8 +2,6 @@ const chai = require('chai');
 const sinon = require('sinon');
 const analyzer = require('./analyzer');
 
-const expect = chai.expect
-
 describe('Analyzer', function () {
   let sandbox;
 
@@ -21,7 +19,7 @@ describe('Analyzer', function () {
       "devDependencies": {"c":"3","d":"4"}
     }`);
 
-    await analyzer.analyze(['/test/package.json', '/test/other'], getFileContentsFn);
+    await analyzer.analyzeDependencies('test repository', ['/test/package.json', '/test/other'], getFileContentsFn);
 
     sinon.assert.calledWith(getFileContentsFn, '/test/package.json');
   });
