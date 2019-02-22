@@ -1,4 +1,4 @@
-async function analyzeDependencies(repository, filePaths, getFileContentsFn) {
+async function analyzeDependencies(outputStream, repository, filePaths, getFileContentsFn) {
   // Look for node package.json
   const packageFilePath = filePaths.find(p => p.endsWith('package.json'));
   if(packageFilePath){
@@ -18,7 +18,7 @@ async function analyzeDependencies(repository, filePaths, getFileContentsFn) {
     ));
 
     dependencies.forEach(dependency => {
-      process.stdout.write(`"${repository}","${packageJson.name}","${dependency}"\n`);
+      outputStream.write(`"${repository}","${packageJson.name}","${dependency}"\n`);
     });
 
     return;
@@ -28,5 +28,5 @@ async function analyzeDependencies(repository, filePaths, getFileContentsFn) {
 }
 
 module.exports = {
-  analyzeDependencies: analyzeDependencies
+  analyzeDependencies
 }

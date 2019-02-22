@@ -30,7 +30,8 @@ async function worker() {
     
     const installationToken = await github.post(appToken, installation.access_tokens_url);
     const installationRepositories = await github.getPaginated(installationToken.token, installation.repositories_url + '?type=sources', result => result.repositories);
-
+    
+    const dependenciesOutputStream = fs.createWriteStream('./dependencies.csv');
     for (const repository of installationRepositories.filter(repository => repository.owner.login === owner && repository.fork === false && repository.archived === false)) {
       const files = await github.getTreeFiles(
         installationToken.token,
@@ -51,9 +52,9 @@ async function worker() {
         repository.name,
         repository.default_branch
       );
-
-      await analyzer.analyzeDependencies(repository.full_name, filePaths, getFileContentsFn);
+      await analyzer.analyzeDependencies(dependenciesOutputStream, repository.full_name, filePaths, getFileContentsFn);
     }
+    dependenciesOutputStream.end();
   }
 };
 

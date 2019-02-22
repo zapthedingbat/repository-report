@@ -128,6 +128,6 @@ describe('Worker', function () {
 
     await worker();
 
-    sinon.assert.calledWith(analyzeDependencies, 'test full_name', ['/test/file-1', '/test/file-2'], sinon.match.func);
+    sinon.assert.calledWith(analyzeDependencies, sinon.match.object, 'test full_name', ['/test/file-1', '/test/file-2'], sinon.match.func);
   });
 });
