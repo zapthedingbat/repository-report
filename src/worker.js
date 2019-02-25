@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const github = require('./github');
-const analyzer = require('./analyzer');
+const nodeDependencies = require('./analyzers/node-dependencies');
 
 // Load github app key
 const keyPath = path.join(__dirname, '../.keys/github-private-key.pem');
@@ -30,8 +30,7 @@ async function worker() {
     
     const installationToken = await github.post(appToken, installation.access_tokens_url);
     const installationRepositories = await github.getPaginated(installationToken.token, installation.repositories_url + '?type=sources', result => result.repositories);
-    
-    const dependenciesOutputStream = fs.createWriteStream('./dependencies.csv');
+
     for (const repository of installationRepositories.filter(repository => repository.owner.login === owner && repository.fork === false && repository.archived === false)) {
       const files = await github.getTreeFiles(
         installationToken.token,
@@ -52,9 +51,11 @@ async function worker() {
         repository.name,
         repository.default_branch
       );
-      await analyzer.analyzeDependencies(dependenciesOutputStream, repository.full_name, filePaths, getFileContentsFn);
+      const dependencies = await nodeDependencies(filePaths, getFileContentsFn);
+
+      // TODO: work out how to report this
+      console.log(repository.full_name, JSON.stringify(dependencies));
     }
-    dependenciesOutputStream.end();
   }
 };
 

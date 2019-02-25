@@ -52,6 +52,7 @@ async function getInstallations(token) {
 }
 
 async function getTreeFiles(token, owner, repo, branch) {
+  // TODO: Make this recursive - https://developer.github.com/v3/git/trees/#get-a-tree
   const url = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`;
   return get(token, url);
 }

@@ -1,8 +1,8 @@
 const chai = require('chai');
 const sinon = require('sinon');
-const analyzer = require('./analyzer');
+const nodeDependencies = require('./node-dependencies');
 
-describe('Analyzer', function () {
+describe('Node Dependencies Analyzer', function () {
   let sandbox;
 
   before(function () {
@@ -18,9 +18,8 @@ describe('Analyzer', function () {
       "dependencies": {"a":"1","b":"2"},
       "devDependencies": {"c":"3","d":"4"}
     }`);
-    const outputStream = { write: sandbox.stub() };
 
-    await analyzer.analyzeDependencies(outputStream, 'test repository', ['/test/package.json', '/test/other'], getFileContentsFn);
+    await nodeDependencies(['/test/package.json', '/test/other'], getFileContentsFn);
 
     sinon.assert.calledWith(getFileContentsFn, '/test/package.json');
   });

@@ -1,12 +1,8 @@
-async function analyzeDependencies(outputStream, repository, filePaths, getFileContentsFn) {
-  // Look for node package.json
+async function nodeJsDependencies(filePaths, getFileContentsFn) {
   const packageFilePath = filePaths.find(p => p.endsWith('package.json'));
   if(packageFilePath){
-    
-    // package.json found
     const packageFileContents = await getFileContentsFn(packageFilePath);
     const packageJson = JSON.parse(packageFileContents);
-
     const dependencies = Object.getOwnPropertyNames(Object.assign(
       {},
       packageJson.dependencies,
@@ -16,17 +12,14 @@ async function analyzeDependencies(outputStream, repository, filePaths, getFileC
       packageJson.optionalDependencies,
       packageJson.engines
     ));
-
-    dependencies.forEach(dependency => {
-      outputStream.write(`"${repository}","${packageJson.name}","${dependency}"\n`);
-    });
-
-    return;
+    return {
+      name: packageJson.name,
+      dependencies
+    }
   } else {
     // package.json missing. Not a node code-base?
+    return null;
   }
 }
 
-module.exports = {
-  analyzeDependencies
-}
+module.exports = nodeJsDependencies;
