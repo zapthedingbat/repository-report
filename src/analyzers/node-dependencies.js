@@ -1,4 +1,4 @@
-async function nodeJsDependencies(filePaths, getFileContentsFn) {
+async function nodeDependencies(filePaths, getFileContentsFn) {
   const packageFilePath = filePaths.find(p => p.endsWith('package.json'));
   if(packageFilePath){
     const packageFileContents = await getFileContentsFn(packageFilePath);
@@ -22,4 +22,6 @@ async function nodeJsDependencies(filePaths, getFileContentsFn) {
   }
 }
 
-module.exports = nodeJsDependencies;
+module.exports = {
+  nodeDependencies
+}

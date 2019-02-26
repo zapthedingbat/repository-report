@@ -1,6 +1,6 @@
 const chai = require('chai');
 const sinon = require('sinon');
-const nodeDependencies = require('./node-dependencies');
+const { nodeDependencies } = require('./node-dependencies');
 
 describe('Node Dependencies Analyzer', function () {
   let sandbox;
