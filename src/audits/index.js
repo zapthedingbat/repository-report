@@ -1,5 +1,5 @@
-const { nodeDependencies } = require('./node-dependencies');
-const { readme } = require('./readme');
+const { nodeDependencies } = require('./node-dependencies/node-dependencies');
+const { readme } = require('./readme/readme');
 
 // TODO: Make list of audits configurable
 async function run(assets, context) {
