@@ -1,7 +1,7 @@
-async function nodeDependencies(filePaths, getFileContentsFn) {
-  const packageFilePath = filePaths.find(p => p.endsWith('package.json'));
+async function audit(artifacts, context) {
+  const packageFilePath = artifacts.filePaths.find(p => p.endsWith('package.json'));
   if(packageFilePath){
-    const packageFileContents = await getFileContentsFn(packageFilePath);
+    const packageFileContents = await context.getFileContents(packageFilePath);
     const packageJson = JSON.parse(packageFileContents);
     const dependencies = Object.getOwnPropertyNames(Object.assign(
       {},
@@ -23,5 +23,5 @@ async function nodeDependencies(filePaths, getFileContentsFn) {
 }
 
 module.exports = {
-  nodeDependencies
+  audit
 }

@@ -5,20 +5,17 @@ describe('Repository', function () {
   let sandbox;
   let github;
   let getFileContents;
-  let nodeDependencies;
-  let processRepository;
+  let audits;
 
   before(function () {
     sandbox = sinon.createSandbox();
-    github = {
-      getTreeFiles: sandbox.stub()
-    };
-    nodeDependencies = sandbox.stub();
+    github = { getTreeFiles: sandbox.stub() };
+    audits = { run: sandbox.stub() };
     getFileContents = sandbox.stub();
     createGetFileContents = sandbox.stub().returns(getFileContents);
     ({ processRepository } = proxyquire('./repository', {
       './github': github,
-      './analyzers/node-dependencies': { nodeDependencies },
+      './audits': audits,
       './get-github-file-contents': { getGithubFileContents: createGetFileContents }
     }));
   });
@@ -34,7 +31,6 @@ describe('Repository', function () {
         { path: 'test file path two' }
       ]
     });
-    nodeDependencies.resolves();
 
     await processRepository('test token', {
       owner: { login: 'test login' },
@@ -43,6 +39,9 @@ describe('Repository', function () {
     });
 
     sinon.assert.calledWith(createGetFileContents, 'test token', 'test login', 'test name', 'test default_branch');
-    sinon.assert.calledWith(nodeDependencies, ['test file path one', 'test file path two'], getFileContents);
+    sinon.assert.calledWith(audits.run,
+      { filePaths: ['test file path one', 'test file path two'] }, 
+      { getFileContents }
+    );
   });
 });

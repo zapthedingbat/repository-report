@@ -1,8 +1,7 @@
-const { processInstallationRepositories } = require("./installation");
-
 const fs = require('fs');
 const path = require('path');
 const github = require('./github');
+const processInstallationRepositories = require("./installation");
 
 // Load github app key
 const keyPath = path.join(__dirname, '../.keys/github-private-key.pem');

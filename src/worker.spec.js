@@ -19,7 +19,7 @@ describe('Worker', function () {
     processInstallationRepositories = sandbox.stub();
     worker = proxyquire('./worker', {
       './github': github,
-      './installation': { processInstallationRepositories }
+      './installation': processInstallationRepositories
     });
   });
 

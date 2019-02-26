@@ -1,8 +1,8 @@
 const chai = require('chai');
 const sinon = require('sinon');
-const { nodeDependencies } = require('./node-dependencies');
+const { audit } = require('./node-dependencies');
 
-describe('Node Dependencies Analyzer', function () {
+describe('Node Dependencies Audit', function () {
   let sandbox;
 
   before(function () {
@@ -14,13 +14,16 @@ describe('Node Dependencies Analyzer', function () {
   });
 
   it('should get the contents of the package.json file', async function () {
-    const getFileContentsFn = sandbox.stub().resolves(`{
+    const getFileContents = sandbox.stub().resolves(`{
       "dependencies": {"a":"1","b":"2"},
       "devDependencies": {"c":"3","d":"4"}
     }`);
 
-    await nodeDependencies(['/test/package.json', '/test/other'], getFileContentsFn);
+    await audit(
+      { filePaths: ['/test/package.json', '/test/other'] },
+      { getFileContents }
+    );
 
-    sinon.assert.calledWith(getFileContentsFn, '/test/package.json');
+    sinon.assert.calledWith(getFileContents, '/test/package.json');
   });
 });

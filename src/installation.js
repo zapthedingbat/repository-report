@@ -11,6 +11,4 @@ async function processInstallationRepositories(installation, owner, token) {
   }
 }
 
-module.exports = {
-  processInstallationRepositories
-}
+module.exports = processInstallationRepositories;

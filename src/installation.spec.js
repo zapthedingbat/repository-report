@@ -13,10 +13,10 @@ describe('Installation', function () {
       getPaginated: sandbox.stub()
     };
     processRepository = sandbox.stub();
-    ({ processInstallationRepositories } = proxyquire('./installation', {
+    processInstallationRepositories = proxyquire('./installation', {
       './github': github,
       './repository': { processRepository }
-    }));
+    });
   });
 
   afterEach(function () {
