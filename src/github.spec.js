@@ -173,7 +173,7 @@ describe('GitHub', function () {
     })
 
     it('should get the file contents', async function () {
-      const actual = await github.getFileContents('test token', 'test owner', 'test repo', 'test branch', 'test/path');
+      const actual = await github.readFile('test token', 'test owner', 'test repo', 'test branch', 'test/path');
       
       expect(actual).to.equal('test');
       sinon.assert.calledWithExactly(nodeFetch, 'https://api.github.com/repos/test owner/test repo/contents/test%2Fpath?ref=test branch', {

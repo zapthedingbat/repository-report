@@ -57,7 +57,7 @@ async function getTreeFiles(token, owner, repo, branch) {
   return get(token, url);
 }
 
-async function getFileContents(token, owner, repo, branch, path) {
+async function readFile(token, owner, repo, branch, path) {
   const encodedPath = encodeURIComponent(path);
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodedPath}?ref=${branch}`;
   const file = await get(token, url);
@@ -90,7 +90,7 @@ module.exports = {
   clone,
   get,
   getAppToken,
-  getFileContents,
+  readFile,
   getInstallations,
   getPaginated,
   getTreeFiles,

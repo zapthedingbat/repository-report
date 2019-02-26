@@ -14,16 +14,16 @@ describe('Node Dependencies Audit', function () {
   });
 
   it('should get the contents of the package.json file', async function () {
-    const getFileContents = sandbox.stub().resolves(`{
+    const readFile = sandbox.stub().resolves(`{
       "dependencies": {"a":"1","b":"2"},
       "devDependencies": {"c":"3","d":"4"}
     }`);
 
     await audit(
       { filePaths: ['/test/package.json', '/test/other'] },
-      { getFileContents }
+      { readFile }
     );
 
-    sinon.assert.calledWith(getFileContents, '/test/package.json');
+    sinon.assert.calledWith(readFile, '/test/package.json');
   });
 });

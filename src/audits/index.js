@@ -1,22 +1,31 @@
-const { nodeDependencies } = require('./node-dependencies/node-dependencies');
-const { readme } = require('./readme/readme');
+//const { nodeDependencies } = require('./node-dependencies/node-dependencies');
+
+const { hasReadme, readmeLength, readmeStructure } = require('./readme');
 
 // TODO: Make list of audits configurable
-async function run(assets, context) {
+async function runAllAudits(assets, context) {
   const audits = [
-    nodeDependencies,
-    readme
+    hasReadme,
+    readmeLength,
+    readmeStructure
   ];
 
+  const reports = [];
   for (audit in audits) {
     try {
-      await audit.audit(assets, context);
+      const result = await audit.audit(assets, context);
+      const report = {
+        name: audit.name,
+        description: audit.description,
+        result,
+      }
+      reports.push(report);
     } catch (err) {
       console.error(err);
     }
   }
+
+  return reports;
 }
 
-module.exports = {
-  run
-}
+module.exports = runAllAudits;

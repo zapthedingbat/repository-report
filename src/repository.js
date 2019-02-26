@@ -1,21 +1,21 @@
 const github = require('./github');
-const { getGithubFileContents } = require('./get-github-file-contents');
-const { run } = require('./audits');
+const createGithubReadFile = require('./create-github-read-file');
+const audit = require('./audits');
 
 async function processRepository(token, repository) {
   const files = await github.getTreeFiles(token, repository.owner.login, repository.name, repository.default_branch);
   const filePaths = files.tree.map(file => file.path);
-  const getFileContents = getGithubFileContents(token, repository.owner.login, repository.name, repository.default_branch);
+  const readFile = createGithubReadFile(token, repository.owner.login, repository.name, repository.default_branch);
   
   const assets = {
     filePaths
   }
 
   const context = {
-    getFileContents
+    readFile
   }
 
-  await run(assets, context);
+  return await audit(assets, context);
 }
 
 module.exports = {

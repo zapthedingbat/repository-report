@@ -1,7 +1,7 @@
 async function audit(artifacts, context) {
   const packageFilePath = artifacts.filePaths.find(p => p.endsWith('package.json'));
   if(packageFilePath){
-    const packageFileContents = await context.getFileContents(packageFilePath);
+    const packageFileContents = await context.readFile(packageFilePath);
     const packageJson = JSON.parse(packageFileContents);
     const dependencies = Object.getOwnPropertyNames(Object.assign(
       {},

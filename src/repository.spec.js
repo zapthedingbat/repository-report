@@ -4,19 +4,19 @@ const proxyquire = require('proxyquire');
 describe('Repository', function () {
   let sandbox;
   let github;
-  let getFileContents;
+  let readFile;
   let audits;
 
   before(function () {
     sandbox = sinon.createSandbox();
     github = { getTreeFiles: sandbox.stub() };
-    audits = { run: sandbox.stub() };
-    getFileContents = sandbox.stub();
-    createGetFileContents = sandbox.stub().returns(getFileContents);
+    audit = sandbox.stub();
+    readFile = sandbox.stub();
+    createGithubReadFile = sandbox.stub().returns(readFile);
     ({ processRepository } = proxyquire('./repository', {
       './github': github,
-      './audits': audits,
-      './get-github-file-contents': { getGithubFileContents: createGetFileContents }
+      './audits': audit,
+      './create-github-read-file': createGithubReadFile
     }));
   });
 
@@ -38,10 +38,10 @@ describe('Repository', function () {
       default_branch: 'test default_branch'
     });
 
-    sinon.assert.calledWith(createGetFileContents, 'test token', 'test login', 'test name', 'test default_branch');
-    sinon.assert.calledWith(audits.run,
+    sinon.assert.calledWith(createGithubReadFile, 'test token', 'test login', 'test name', 'test default_branch');
+    sinon.assert.calledWith(audit,
       { filePaths: ['test file path one', 'test file path two'] }, 
-      { getFileContents }
+      { readFile }
     );
   });
 });
