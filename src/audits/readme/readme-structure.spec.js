@@ -16,17 +16,27 @@ describe('Readme structure', function () {
         filePaths: ['readme.md']
       }, { readFile: () => testFileContents});
 
-      chai.expect(result).to.eql({ score: 0 });
+      chai.expect(result).to.eql({ score: 0, details: { items: [{ heading: '#readme' }] } });
     });
 
     it('should return a score of 1 when readme contains more than 2 headings', async function () {
-      const testFileContents = `a\n#test\n#readme\n##file\nwith\n#mutiple headings\n`;
+      const testFileContents = `a\n#test\n#readme\n##file\nwith\n#multiple headings\n`;
       
       const result = await readmeStructure.audit({
         filePaths: ['readme.md']
       }, { readFile: () => testFileContents});
 
-      chai.expect(result).to.eql({ score: 1 });
+      chai.expect(result).to.eql({
+        score: 1,
+        details: {
+          items: [
+            { heading: '#test' },
+            { heading: '#readme' },
+            { heading: '##file' },
+            { heading: '#multiple headings' }
+          ]
+        }
+      });
     });
   });
 });

@@ -9,7 +9,7 @@ async function processInstallationRepositories(installation, owner, token) {
   for (const repository of repositories) {
     const reports = await processRepository(installationToken.token, repository);
     renderHtml({
-      name: repository.name,
+      repository,
       reports
     });
   }

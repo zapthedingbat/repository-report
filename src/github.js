@@ -61,7 +61,12 @@ async function readFile(token, owner, repo, branch, path) {
   const encodedPath = encodeURIComponent(path);
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodedPath}?ref=${branch}`;
   const file = await get(token, url);
-  return Buffer.from(file.content, 'base64').toString('utf8');
+  try {
+    return Buffer.from(file.content, 'base64').toString('utf8');
+  } catch (err) {
+    console.log('Error parsing file content', url, file);
+    throw err;
+  }
 }
 
 function clone(token, url, localWorkingDirectory) {
