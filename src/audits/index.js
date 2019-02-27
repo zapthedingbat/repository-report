@@ -12,7 +12,6 @@ async function runAllAudits(assets, context) {
 
   const reports = [];
   for (audit of audits) {
-    console.log('audit');
     try {
       const result = await audit.audit(assets, context);
       const report = {
