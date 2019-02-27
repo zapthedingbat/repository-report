@@ -1,5 +1,9 @@
-const renderSections = (data) => data.map(section => `
-  <h2>${section.title}</h2>
+const renderReports = reports => reports.map(report => `
+  <h2>${report.name}</h2>
+  <p>${report.description}</p>
+  <pre>
+  ...
+  </pre>
 `).join();
 
 const renderHtml = (data) => `<doctype html>
@@ -8,13 +12,13 @@ const renderHtml = (data) => `<doctype html>
     <title>Report</title>
 <head>
 <body>
-  <h1>Report</h1>
-  ${renderSections(data.sections)}
+  <h1>Report ${data.name}</h1>
+  ${renderReports(data.reports)}
 </html>
 `;
 
-function render(report) {
-  process.stdout.write(renderHtml(report));
+function render(data) {
+  process.stdout.write(renderHtml(data));
 }
 
 module.exports = render;
