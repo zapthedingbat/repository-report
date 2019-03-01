@@ -1,7 +1,7 @@
 const name = 'Readme structure';
 const description = 'Include helpful topics in the project readme file';
 
-const pattern = /(^|\/)readme\.md$/i;
+const pattern = /^readme\.md$/i;
 const headingPattern = /^#+\s*(.+)$/mg;
 
 async function audit(artifacts, context) {

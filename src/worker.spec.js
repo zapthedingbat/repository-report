@@ -30,12 +30,16 @@ describe('Worker', function () {
   it('handle each process each installation of the app', async function () {
     sandbox.stub(fs, 'readFileSync').returns('test key');
     sandbox.stub(github, 'getAppToken').resolves('test app token');
-    const testInstallations = ['test installation one', 'test installation two'];
+    const testInstallations = [
+      { repository_selection: 'all', account: { login: 'test installation one' } },
+      { repository_selection: 'all', account: { login: 'test installation two' } }
+    ];
     sandbox.stub(github, 'getInstallations').resolves(testInstallations);
 
     await worker();
 
     sinon.assert.calledWith(github.getAppToken, 'test key', 'test app id');
-    sinon.assert.calledWith(processInstallationRepositories, 'test installation one', 'test owner', 'test app token');
+    sinon.assert.calledWith(processInstallationRepositories, testInstallations[0], 'test owner', 'test app token');
+    sinon.assert.calledWith(processInstallationRepositories, testInstallations[1], 'test owner', 'test app token');
   });
 });

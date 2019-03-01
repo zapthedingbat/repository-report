@@ -1,4 +1,4 @@
-const chai = require('chai');
+const { expect } = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 
@@ -28,25 +28,13 @@ describe('Audits', function () {
   });
 
   it('should run audits and return the results', async function () {
-    const mockAssets = {};
+    const mockAssets = {
+      filePaths: []
+    };
     const mockContext = {};
     
     const reports = await audits(mockAssets, mockContext);
-
-    chai.expect(reports).to.eql([{
-      name: 'test name',
-      description: 'test description',
-      result: 'test result'
-    },
-    {
-      name: 'test name',
-      description: 'test description',
-      result: 'test result'
-    },
-    {
-      name: 'test name',
-      description: 'test description',
-      result: 'test result'
-    }]);
+    
+    reports.forEach(report => expect(report).to.have.all.keys('name', 'description', 'result'));
   });
 });
