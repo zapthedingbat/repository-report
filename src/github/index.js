@@ -1,9 +1,14 @@
-const fetch = require('node-fetch');
-const { spawn } = require('child_process');
+const { join:joinPath } = require('path');
 const { sign } = require('jsonwebtoken');
+const logger = require('../logger');
+const createCacheFetch = require('../cache-fetch');
+
+const cacheDir = joinPath(__dirname, '../.cache');
+const cacheFetch = createCacheFetch(cacheDir);
 
 function githubFetch(token, url, method) {
-  return fetch(url, {
+  logger.debug({url, method}, 'Fetch');
+  return cacheFetch(url, {
     method: method ? method : 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -54,7 +59,13 @@ async function getInstallations(token) {
 async function getTreeFiles(token, owner, repo, branch) {
   // TODO: Make this recursive - https://developer.github.com/v3/git/trees/#get-a-tree
   const url = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`;
-  return get(token, url);
+  const result = await get(token, url);
+
+  if (!result.tree) {
+    return { tree:[] }
+  }
+
+  return result;
 }
 
 async function readFile(token, owner, repo, branch, path) {
@@ -64,35 +75,34 @@ async function readFile(token, owner, repo, branch, path) {
   try {
     return Buffer.from(file.content, 'base64').toString('utf8');
   } catch (err) {
-    console.log('Error parsing file content', url, file);
+    logger.error({ err, url, file }, 'Error parsing file content');
     throw err;
   }
 }
 
-function clone(token, url, localWorkingDirectory) {
-  const cloneUrl = new URL(url);
-  cloneUrl.username = 'x-access-token';
-  cloneUrl.password = token;
+// function clone(token, url, localWorkingDirectory) {
+//   const cloneUrl = new URL(url);
+//   cloneUrl.username = 'x-access-token';
+//   cloneUrl.password = token;
 
-  return new Promise((resolve, reject) => {
-    const gitProcess = spawn('git', [
-      'clone',
-      cloneUrl.href,
-      localWorkingDirectory,
-    ]);
+//   return new Promise((resolve, reject) => {
+//     const gitProcess = spawn('git', [
+//       'clone',
+//       cloneUrl.href,
+//       localWorkingDirectory,
+//     ]);
     
-    gitProcess.on('close', function (code) {
-      if (code === 0) {
-        resolve(localWorkingDirectory);
-      } else {
-        reject(`child process exited with code ${code}`);
-      }
-    });
-  });
-}
+//     gitProcess.on('close', function (code) {
+//       if (code === 0) {
+//         resolve(localWorkingDirectory);
+//       } else {
+//         reject(`child process exited with code ${code}`);
+//       }
+//     });
+//   });
+// }
 
 module.exports = {
-  clone,
   get,
   getAppToken,
   readFile,
