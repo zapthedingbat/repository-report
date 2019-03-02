@@ -6,7 +6,7 @@ const renderResultDetails = details => {
     const keys = Object.keys(details.items[0]);
 return `<table class="repository-report-details">
 <tr>${keys.map(key => `<th>${key}</th>`).join('')}</tr>
-${details.items.map(item => `<tr>${keys.map(key => `<td>${item[key]}</td>`).join('')}</tr>`).join()}
+${details.items.map(item => `<tr>${keys.map(key => `<td>${item[key]}</td>`).join('')}</tr>`).join('')}
 </table>`;
   }
 };
