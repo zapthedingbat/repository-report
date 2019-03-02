@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const github = require('./github');
 const createReportGenerator = require("./report/create-report-generator");
-const renderHtml = require("./report/render-html");
 
 const processInstallationRepositories = require("./installation");
 const logger = require('./logger');
@@ -10,7 +9,7 @@ const logger = require('./logger');
 // Load github app key
 const keyPath = path.join(__dirname, '../.keys/github-private-key.pem');
 
-async function worker(createWriter) {
+async function worker(createWriter, render) {
   const appId = process.env.GITHUB_APP_IDENTIFIER;
   const owner = process.env.GITHUB_OWNER;
   const key = fs.readFileSync(keyPath);
@@ -27,7 +26,7 @@ async function worker(createWriter) {
 
   for (const installation of installations) {
     const writer = createWriter(installation.account.login);
-    const generateReport = createReportGenerator(writer, renderHtml);
+    const generateReport = createReportGenerator(writer, render);
     await processInstallationRepositories(installation, owner, appToken, generateReport);
   }
 };
