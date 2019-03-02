@@ -18,10 +18,10 @@ async function worker() {
 
   // Log installations
   if (logger.isLevelEnabled('debug')) {
-    logger.debug(installations, 'installations');
+    logger.debug(installations, 'processing installations');
   } else {
     const obj = installations.map(installation => `${installation.account.login} (${installation.repository_selection})`);
-    logger.info(obj, 'installations');
+    logger.info(obj, 'processing installations');
   }
 
   const stdOutWriter = (str) => {
