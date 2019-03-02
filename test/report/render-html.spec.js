@@ -1,5 +1,5 @@
 const chai = require('chai');
-const renderHtml = require('./render-html');
+const renderHtml = require('../../src/report/render-html');
 
 const expect = chai.expect;
 

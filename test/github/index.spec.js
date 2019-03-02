@@ -22,7 +22,7 @@ describe('GitHub', function () {
     jsonwebtoken = {
       sign: sandbox.stub()
     }
-    github = proxyquire('./index', {
+    github = proxyquire('../../src/github/index', {
       './../cache-fetch': createCacheFetch,
       'jsonwebtoken': jsonwebtoken
     });

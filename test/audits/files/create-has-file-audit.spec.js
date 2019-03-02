@@ -1,5 +1,5 @@
 const chai = require('chai');
-const createHasFileAudit = require('./create-has-file-audit');
+const createHasFileAudit = require('../../../src/audits/files/create-has-file-audit');
 
 describe('Create has-file audit', function () {
   let hasFileAudit;

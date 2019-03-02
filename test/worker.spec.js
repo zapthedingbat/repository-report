@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const proxyquire = require('proxyquire');
-const github = require('./github');
+const github = require('../src/github');
 
 describe('Worker', function () {
   let sandbox;
@@ -17,7 +17,7 @@ describe('Worker', function () {
     sandbox.stub(process.env, 'GITHUB_APP_IDENTIFIER').value('test app id');
     sandbox.stub(process.env, 'GITHUB_OWNER').value('test owner');
     processInstallationRepositories = sandbox.stub();
-    worker = proxyquire('./worker', {
+    worker = proxyquire('../src/worker', {
       './github': github,
       './installation': processInstallationRepositories
     });

@@ -3,6 +3,7 @@ npm-debug.log
 .env
 .keys
 .cache
+.reports
 
 # IDE Settings
 .editorconfig

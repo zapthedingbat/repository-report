@@ -14,7 +14,7 @@ describe('GitHub Clone', function () {
   
   beforeEach(function () {
     childProcess = { spawn: sandbox.stub() };
-    clone = proxyquire('./clone', {
+    clone = proxyquire('../../src/github/clone', {
       'child_process': childProcess,
     });
   })

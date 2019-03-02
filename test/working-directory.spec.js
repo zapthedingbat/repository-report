@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
-const workingDirectory = require('./working-directory');
+const workingDirectory = require('../src/working-directory');
 
 const expect = chai.expect;
 

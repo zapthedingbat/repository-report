@@ -13,7 +13,7 @@ describe('Repository', function () {
     audit = sandbox.stub();
     readFile = sandbox.stub();
     createGithubReadFile = sandbox.stub().returns(readFile);
-    processRepository = proxyquire('./repository', {
+    processRepository = proxyquire('../src/repository', {
       './github': github,
       './audits': audit,
       './create-github-read-file': createGithubReadFile

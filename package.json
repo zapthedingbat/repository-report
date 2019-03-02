@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "node -r dotenv/config ./src/index",
-    "test": "mocha src/**/*.spec.js"
+    "test": "mocha test/**/*.spec.js"
   },
   "repository": {
     "type": "git",

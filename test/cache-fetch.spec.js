@@ -31,7 +31,7 @@ describe('Cache fetch', function () {
         ['default']: sandbox.stub(),
         Response: sandbox.stub()
       };
-      createCacheFetch = proxyquire('./cache-fetch', {
+      createCacheFetch = proxyquire('../src/cache-fetch', {
         'fs': mockFs,
         'util': { promisify: (a) => a },
         'node-fetch': nodeFetch

@@ -14,7 +14,7 @@ describe('Audits', function () {
       description: 'test description',
       audit: sandbox.stub().resolves('test result')
     };
-    audits = proxyquire('./index', {
+    audits = proxyquire('../../src/audits/index', {
       './readme': {
         hasReadme: mockAudit,
         readmeLength: mockAudit,

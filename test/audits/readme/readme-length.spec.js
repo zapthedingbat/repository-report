@@ -1,5 +1,5 @@
 const chai = require('chai');
-const readmeStructure = require('./readme-length');
+const readmeStructure = require('../../../src/audits/readme/readme-length');
 
 describe('Readme length', function () {
   describe('description', function () {

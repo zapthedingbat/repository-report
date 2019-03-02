@@ -14,7 +14,7 @@ describe('Installation', function () {
     };
     processRepository = sandbox.stub();
     renderHtml = sandbox.stub();
-    processInstallationRepositories = proxyquire('./installation', {
+    processInstallationRepositories = proxyquire('../src/installation', {
       './github': github,
       './repository': processRepository,
       './report/render-html': renderHtml,
