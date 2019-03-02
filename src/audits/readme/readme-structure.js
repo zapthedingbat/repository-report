@@ -9,7 +9,7 @@ async function audit(artifacts, context) {
   let headings = [];
   if (fileName) {
     const fileContent = await context.readFile(fileName);
-    headings = fileContent.match(headingPattern);
+    headings = fileContent.match(headingPattern) || [];
   }
 
   return {
