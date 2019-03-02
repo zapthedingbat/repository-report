@@ -7,7 +7,6 @@ const cacheDir = joinPath(__dirname, '../.cache');
 const cacheFetch = createCacheFetch(cacheDir);
 
 function githubFetch(token, url, method) {
-  logger.debug({url, method}, 'Fetch');
   return cacheFetch(url, {
     method: method ? method : 'GET',
     headers: {
