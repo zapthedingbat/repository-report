@@ -1,34 +1,31 @@
 const fs = require('fs');
 const path = require('path');
 const github = require('./github');
-const createReportGenerator = require("./report/create-report-generator");
+const generateReports = require('./report');
 
-const processInstallationRepositories = require("./installation");
-const logger = require('./logger');
+const auditInstallation = require("./installation");
 
 // Load github app key
 const keyPath = path.join(__dirname, '../.keys/github-private-key.pem');
 
-async function worker(createWriter, render) {
+async function worker() {
   const appId = process.env.GITHUB_APP_IDENTIFIER;
   const owner = process.env.GITHUB_OWNER;
+
   const key = fs.readFileSync(keyPath);
   const appToken = await github.getAppToken(key, appId);
   const installations = await github.getInstallations(appToken);
-  
-  // Log installations
-  if (logger.isLevelEnabled('debug')) {
-    logger.debug(installations, 'processing installations');
-  } else {
-    const obj = installations.map(installation => `${installation.account.login} (${installation.repository_selection})`);
-    logger.info(obj, 'processing installations');
+
+  const results = [];
+  for (const installation of installations) {
+    const repositoryResults = await auditInstallation(installation, owner, appToken);
+    results.push({
+      installation,
+      repositories: repositoryResults
+    });
   }
 
-  for (const installation of installations) {
-    const writer = createWriter(installation.account.login);
-    const generateReport = createReportGenerator(writer, render);
-    await processInstallationRepositories(installation, owner, appToken, generateReport);
-  }
+  await generateReports(appId, owner, results);
 };
 
 module.exports = worker;

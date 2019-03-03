@@ -6,7 +6,7 @@ module.exports = {
   hasReadme: createHasFileAudit(
     'Has readme',
     'Project should have a readme file. A Readme file is a way for other users to learn about the project.',
-    /^readme\.md$/),
+    /^readme\.md$/i),
   readmeLength,
   readmeStructure
 }
