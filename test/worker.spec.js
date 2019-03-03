@@ -17,9 +17,11 @@ describe('Worker', function () {
     sandbox.stub(process.env, 'GITHUB_APP_IDENTIFIER').value('test app id');
     sandbox.stub(process.env, 'GITHUB_OWNER').value('test owner');
     processInstallationRepositories = sandbox.stub();
+    generateReports = sandbox.stub();
     worker = proxyquire('../src/worker', {
       './github': github,
-      './installation': processInstallationRepositories
+      './installation': processInstallationRepositories,
+      './report': generateReports
     });
   });
 
@@ -27,7 +29,7 @@ describe('Worker', function () {
     sandbox.restore();
   });
 
-  it('handle each process each installation of the app', async function () {
+  it('should audit each installation of the app', async function () {
     sandbox.stub(fs, 'readFileSync').returns('test key');
     sandbox.stub(github, 'getAppToken').resolves('test app token');
     const createWriter = sandbox.stub();
@@ -43,5 +45,12 @@ describe('Worker', function () {
     sinon.assert.calledWith(github.getAppToken, 'test key', 'test app id');
     sinon.assert.calledWith(processInstallationRepositories, testInstallations[0], 'test owner', 'test app token');
     sinon.assert.calledWith(processInstallationRepositories, testInstallations[1], 'test owner', 'test app token');
+    sinon.assert.calledWith(generateReports, 'test app id', 'test owner', [{
+      installation: { account: { login: "test installation one" }, repository_selection: "all" },
+      repositories: undefined
+    }, {
+      installation: { account: { login: "test installation two" }, repository_selection: "all" },
+      repositories: undefined
+    }]);
   });
 });
