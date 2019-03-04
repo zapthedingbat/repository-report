@@ -1,25 +1,25 @@
-const chai = require('chai');
-const sinon = require('sinon');
-const proxyquire = require('proxyquire');
+const chai = require("chai");
+const sinon = require("sinon");
+const proxyquire = require("proxyquire");
 const expect = chai.expect;
 
-describe('Cache fetch', function () {
+describe("Cache fetch", function() {
   let sandbox;
-  
-  before(function () {
+
+  before(function() {
     sandbox = sinon.createSandbox();
   });
-  
-  afterEach(function () {
+
+  afterEach(function() {
     sandbox.restore();
   });
-  
-  describe('Create', function () {
+
+  describe("Create", function() {
     let createCacheFetch;
     let mockFs;
     let nodeFetch;
 
-    beforeEach(function () {
+    beforeEach(function() {
       mockFs = {
         exists: sandbox.stub(),
         mkdirSync: sandbox.stub(),
@@ -28,83 +28,91 @@ describe('Cache fetch', function () {
         writeFile: sandbox.stub()
       };
       nodeFetch = {
-        ['default']: sandbox.stub(),
+        ["default"]: sandbox.stub(),
         Response: sandbox.stub()
       };
-      createCacheFetch = proxyquire('../src/cache-fetch', {
-        'fs': mockFs,
-        'util': { promisify: (a) => a },
-        'node-fetch': nodeFetch
+      createCacheFetch = proxyquire("../src/cache-fetch", {
+        fs: mockFs,
+        util: { promisify: a => a },
+        "node-fetch": nodeFetch
       });
-    })
-
-    it('should create the cache directory if it doesn\'t exist', function () {
-      mockFs.existsSync.returns(false);
-
-      createCacheFetch('test path');
-
-      sinon.assert.calledWith(mockFs.mkdirSync, 'test path');
     });
 
-    it('should not create the cache directory if it already exist', async function () {
+    it("should create the cache directory if it doesn't exist", function() {
+      mockFs.existsSync.returns(false);
+
+      createCacheFetch("test path");
+
+      sinon.assert.calledWith(mockFs.mkdirSync, "test path");
+    });
+
+    it("should not create the cache directory if it already exist", async function() {
       mockFs.existsSync.returns(true);
 
-      createCacheFetch('test path');
+      createCacheFetch("test path");
 
       sinon.assert.notCalled(mockFs.mkdirSync);
     });
 
-    describe('cached fetch', function () {
+    describe("cached fetch", function() {
       let cacheFetch;
 
-      beforeEach(function () {
-        cacheFetch = createCacheFetch('test cache dir');
-      })
+      beforeEach(function() {
+        cacheFetch = createCacheFetch("test cache dir");
+      });
 
-      it('should write successful results to the file system', async function () {
+      it("should write successful results to the file system", async function() {
         nodeFetch.default.resolves({
           status: 200,
-          statusText: 'test status text',
-          headers: { raw: sandbox.mock().returns('test headers') },
-          text: sandbox.mock().returns('text body')
+          statusText: "test status text",
+          headers: { raw: sandbox.mock().returns("test headers") },
+          text: sandbox.mock().returns("text body")
         });
         mockFs.exists.resolves(false);
         mockFs.writeFile.resolves();
 
-        await cacheFetch('test url');
+        await cacheFetch("test url");
 
-        sinon.assert.calledWith(mockFs.writeFile, sinon.match.string, `{"init":{"status":200,"statusText":"test status text","headers":"test headers"},"body":"text body"}`);
+        sinon.assert.calledWith(
+          mockFs.writeFile,
+          sinon.match.string,
+          `{"init":{"status":200,"statusText":"test status text","headers":"test headers"},"body":"text body"}`
+        );
       });
 
-      it('should not write unsuccessful results to the file system', async function () {
+      it("should not write unsuccessful results to the file system", async function() {
         nodeFetch.default.resolves({
           status: 500,
-          statusText: 'test status text',
-          headers: { raw: sandbox.mock().returns('test headers') },
-          text: sandbox.mock().returns('test body')
+          statusText: "test status text",
+          headers: { raw: sandbox.mock().returns("test headers") },
+          text: sandbox.mock().returns("test body")
         });
         const mockResponse = {};
         nodeFetch.Response.returns(mockResponse);
         mockFs.exists.resolves(false);
         mockFs.writeFile.resolves();
 
-        const result = await cacheFetch('test url');
+        const result = await cacheFetch("test url");
 
-        sinon.assert.calledWith(nodeFetch.Response, 'test body', { headers: "test headers", status: 500, statusText: "test status text" } );
+        sinon.assert.calledWith(nodeFetch.Response, "test body", {
+          headers: "test headers",
+          status: 500,
+          statusText: "test status text"
+        });
         expect(result).to.equal(mockResponse);
       });
 
-      it('should return the result from the file system', async function () {
+      it("should return the result from the file system", async function() {
         mockFs.exists.resolves(true);
         mockFs.readFile.resolves('{"body":"test body", "init": "test init"}');
 
         const mockResponse = {};
         nodeFetch.Response.returns(mockResponse);
-        const result = await cacheFetch('test url');
+        const result = await cacheFetch("test url");
 
-        sinon.assert.calledWith(nodeFetch.Response, 'test body', 'test init');
+        sinon.assert.calledWith(nodeFetch.Response, "test body", "test init");
         expect(result).to.equal(mockResponse);
       });
-    })
+    });
   });
 });

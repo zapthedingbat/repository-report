@@ -1,6 +1,6 @@
-const generateReports = require('../src/report/index');
-const json = require('../.reports/report.json');
+const generateReports = require("../src/report/index");
+const json = require("../.reports/report.json");
 
 (async function main() {
-  await generateReports('', json.results);
-}());
+  await generateReports("", json.results);
+})();

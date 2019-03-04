@@ -1,5 +1,5 @@
 function document(fn, title) {
-  return function (...args) {
+  return function(...args) {
     return `<!doctype html>
 <html>
     <head>
@@ -17,7 +17,7 @@ function document(fn, title) {
       </div>
     </body>
 </html>`;
-  }
+  };
 }
 
 function scoreClass(score) {
@@ -34,7 +34,9 @@ function scoreClass(score) {
 
 function badge(score) {
   return `
-  <span title="Score: ${score}" class="badge badge-pill badge-${scoreClass(score)}">${score}</span>
+  <span title="Score: ${score}" class="badge badge-pill badge-${scoreClass(
+    score
+  )}">${score}</span>
   `;
 }
 
@@ -56,20 +58,24 @@ function renderRepositoryResult(result) {
 
 function renderRepositoryResultDetails(details) {
   if (!details) {
-    return '';
+    return "";
   }
   if (details.items && details.items.length > 0) {
     const keys = Object.keys(details.items[0]);
     return `<table class="repository-report-details">
-    <tr>${keys.map(key => `<th>${key}</th>`).join('')}</tr>
-    ${details.items.map(item => `<tr>${keys.map(key => `<td>${item[key]}</td>`).join('')}</tr>`).join('')}
+    <tr>${keys.map(key => `<th>${key}</th>`).join("")}</tr>
+    ${details.items
+      .map(
+        item => `<tr>${keys.map(key => `<td>${item[key]}</td>`).join("")}</tr>`
+      )
+      .join("")}
     </table>`;
   }
 }
 
 function renderRepositoryResultsSummary(results) {
   const total = results.reduce((p, result) => p + result.result.score, 0);
-  const score = (total / results.length);
+  const score = total / results.length;
   return `
   <div class="flex-column">
     <div class="d-flex justify-content-between align-items-center">
@@ -81,19 +87,26 @@ function renderRepositoryResultsSummary(results) {
 }
 
 function renderRepositoryLanguage(language) {
-  return language ? language : `<span class="text-muted">No language detected</span>`;
+  return language
+    ? language
+    : `<span class="text-muted">No language detected</span>`;
 }
 
 function renderDateDays(dateStr) {
   const date = new Date(dateStr);
-  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  const dtf = new Intl.DateTimeFormat('en-US', options);
+  const options = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  };
+  const dtf = new Intl.DateTimeFormat("en-US", options);
   const displayDate = dtf.format(date);
 
   // RelativeTimeFormat not available in Nodejs yet
   const msDay = 1000 * 60 * 60 * 24;
   const days = Math.floor((Date.now() - date.getTime()) / msDay);
-  return  `${displayDate} <span class="text-muted">(${days} days ago)</span>`;
+  return `${displayDate} <span class="text-muted">(${days} days ago)</span>`;
 }
 
 function renderRepositoryDetails(repo) {
@@ -154,7 +167,9 @@ function renderRepositoryDetails(repo) {
 }
 
 function renderRepositoryDescription(description) {
-  return description ? `<p>${description}</p>` : `<p class="text-muted">No description set</p>`;
+  return description
+    ? `<p>${description}</p>`
+    : `<p class="text-muted">No description set</p>`;
 }
 
 function renderRepository(repository, index) {
@@ -193,7 +208,7 @@ function renderRepository(repository, index) {
 
 function totalScore(results) {
   const total = results.reduce((p, result) => p + result.result.score, 0);
-  return (total / results.length);
+  return total / results.length;
 }
 
 function sortByTotalScore(repoA, repoB) {
@@ -203,15 +218,18 @@ function sortByTotalScore(repoA, repoB) {
 }
 
 function renderResult(result) {
-
   // Order repositories by score
   const orderedRepos = result.repositories.sort(sortByTotalScore);
 
   return `
   <div class="installation">
     <div class="py-5 text-center">
-        <img class="d-block mx-auto mb-4" src="${result.installation.account.avatar_url}" alt="" width="72" height="72">
-        <h1 class="display-4"><a href="${result.installation.account.html_url}">${result.installation.account.login}</a></h1>
+        <img class="d-block mx-auto mb-4" src="${
+          result.installation.account.avatar_url
+        }" alt="" width="72" height="72">
+        <h1 class="display-4"><a href="${
+          result.installation.account.html_url
+        }">${result.installation.account.login}</a></h1>
         <p class="lead">
           <!-- Summary lead -->
         </p>
@@ -226,7 +244,7 @@ function renderResult(result) {
 }
 
 function renderAll(fn, ary) {
-  return ary.map(fn).join('');
+  return ary.map(fn).join("");
 }
 
 function html(writer) {
@@ -236,7 +254,7 @@ function html(writer) {
       const render = document(renderResult, result.installation.account.login);
       await write(render(result));
     }
-  }
+  };
 }
 
 module.exports = exports = html;

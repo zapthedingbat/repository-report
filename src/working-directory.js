@@ -1,10 +1,10 @@
-const os = require('os');
-const fs = require('fs');
-const path = require('path');
+const os = require("os");
+const fs = require("fs");
+const path = require("path");
 
 function removeDirectory(dir) {
   if (fs.existsSync(dir)) {
-    fs.readdirSync(dir).forEach(function(file){
+    fs.readdirSync(dir).forEach(function(file) {
       const current = path.join(dir, file);
       if (fs.lstatSync(current).isDirectory()) {
         removeDirectory(current);
@@ -13,11 +13,11 @@ function removeDirectory(dir) {
       }
     });
     fs.rmdirSync(dir);
-  };
+  }
 }
 
 function createWorkingDirectoryPath(owner, name) {
-  let dir = path.join(os.tmpdir(), 'github-tech-report');
+  let dir = path.join(os.tmpdir(), "github-tech-report");
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
   }
@@ -41,4 +41,4 @@ function prepare(owner, name) {
 
 module.exports = {
   prepare
-}
+};

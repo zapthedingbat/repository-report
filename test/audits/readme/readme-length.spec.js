@@ -1,22 +1,25 @@
-const chai = require('chai');
-const readmeStructure = require('../../../src/audits/readme/readme-length');
+const chai = require("chai");
+const readmeStructure = require("../../../src/audits/readme/readme-length");
 
-describe('Readme length', function () {
-
-  describe('name', function () {
-    it('should have a name', function () {
-      chai.expect(readmeStructure.name).to.equal('Readme length');
+describe("Readme length", function() {
+  describe("name", function() {
+    it("should have a name", function() {
+      chai.expect(readmeStructure.name).to.equal("Readme length");
     });
   });
 
-  describe('description', function () {
-    it('should have a description', function () {
-      chai.expect(readmeStructure.description).to.equal('Readme file should provide a reasonable amount of information.');
+  describe("description", function() {
+    it("should have a description", function() {
+      chai
+        .expect(readmeStructure.description)
+        .to.equal(
+          "Readme file should provide a reasonable amount of information."
+        );
     });
   });
 
-  describe('audit', function () {
-    it('should return a score of 0 when readme contains less than 50 words', async function () {
+  describe("audit", function() {
+    it("should return a score of 0 when readme contains less than 50 words", async function() {
       const testFileContents = `this is too short
 # many
 # headings
@@ -29,15 +32,18 @@ describe('Readme length', function () {
 # word
 # count
 # Suspendisse convallis eu augue vel sollicitudin. Maecenas at fermentum ipsum. Etiam ut fringilla sapien, ut porta ipsum. Vivamus sit amet semper libero.`;
-      
-      const result = await readmeStructure.audit({
-        filePaths: ['readme.md']
-      }, { readFile: () => testFileContents});
+
+      const result = await readmeStructure.audit(
+        {
+          filePaths: ["readme.md"]
+        },
+        { readFile: () => testFileContents }
+      );
 
       chai.expect(result).to.eql({ score: 0 });
     });
 
-    it('should return a score of 1 when readme contains 50 or more words', async function () {
+    it("should return a score of 1 when readme contains 50 or more words", async function() {
       const testFileContents = `
       A long readme with helpful information Lorem ipsum dolor sit amet, consectetur 
       adipiscing elit. Proin porta ipsum vel purus vestibulum volutpat. Etiam ut 
@@ -68,10 +74,13 @@ describe('Readme length', function () {
       mollis odio ante et ligula. Vivamus eget ultricies massa. Nulla vehicula ante
       fermentum pulvinar sollicitudin. Integer malesuada lobortis eros in luctus.
       Suspendisse quis quam dictum, lacinia massa vitae, consectetur libero.`;
-      
-      const result = await readmeStructure.audit({
-        filePaths: ['readme.md']
-      }, { readFile: () => testFileContents});
+
+      const result = await readmeStructure.audit(
+        {
+          filePaths: ["readme.md"]
+        },
+        { readFile: () => testFileContents }
+      );
 
       chai.expect(result).to.eql({ score: 1 });
     });

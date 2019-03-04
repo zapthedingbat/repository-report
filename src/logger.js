@@ -1,4 +1,4 @@
-const Pino = require('pino');
+const Pino = require("pino");
 
 const options = {
   customLevels: {
@@ -7,12 +7,12 @@ const options = {
     info: 30,
     warning: 40,
     error: 50,
-    fatal: 60,
+    fatal: 60
   },
   useOnlyCustomLevels: true,
-  level: process.env.LOG_LEVEL || 'info',
-  prettyPrint: process.env.NODE_ENV !== 'production',
-  name: process.env.npm_package_name,
+  level: process.env.LOG_LEVEL || "info",
+  prettyPrint: process.env.NODE_ENV !== "production",
+  name: process.env.npm_package_name
 };
 
 const pino = new Pino(options);

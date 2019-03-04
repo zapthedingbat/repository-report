@@ -1,12 +1,12 @@
-const fs = require('fs');
-const path = require('path');
-const github = require('./github');
-const generateReports = require('./report');
+const fs = require("fs");
+const path = require("path");
+const github = require("./github");
+const generateReports = require("./report");
 
 const auditInstallation = require("./installation");
 
 // Load github app key
-const keyPath = path.join(__dirname, '../.keys/github-private-key.pem');
+const keyPath = path.join(__dirname, "../.keys/github-private-key.pem");
 
 async function worker() {
   const appId = process.env.GITHUB_APP_IDENTIFIER;
@@ -25,6 +25,6 @@ async function worker() {
   }
 
   await generateReports(appId, results);
-};
+}
 
 module.exports = worker;

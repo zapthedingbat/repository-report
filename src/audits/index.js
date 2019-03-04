@@ -1,29 +1,27 @@
 //const { nodeDependencies } = require('./node-dependencies/node-dependencies');
-const logger = require('../logger');
-const {
-  hasReadme,
-  readmeLength,
-  readmeStructure
-} = require('./readme');
+const logger = require("../logger");
+const { hasReadme, readmeLength, readmeStructure } = require("./readme");
+const { pushed } = require("../audits/activity");
 const {
   hasCodeOfConduct,
   hasContributingFile,
   hasEditorConfigFile,
   hasLicenseFile,
   hasSupportFile
-} = require('./files');
+} = require("./files");
 
 // TODO: Make list of audits configurable
 async function runAllAudits(assets, context) {
   const audits = [
+    pushed,
     hasReadme,
     readmeLength,
     readmeStructure,
-    hasCodeOfConduct,
-    hasContributingFile,
-    hasEditorConfigFile,
-    hasLicenseFile,
-    hasSupportFile
+    // hasCodeOfConduct,
+    hasContributingFile
+    // hasEditorConfigFile,
+    // hasLicenseFile,
+    // hasSupportFile
   ];
 
   const reports = [];
@@ -33,11 +31,11 @@ async function runAllAudits(assets, context) {
       const report = {
         name: audit.name,
         description: audit.description,
-        result,
-      }
+        result
+      };
       reports.push(report);
     } catch (err) {
-      logger.error(err, 'Error executing audit');
+      logger.error(err, "Error executing audit");
     }
   }
 

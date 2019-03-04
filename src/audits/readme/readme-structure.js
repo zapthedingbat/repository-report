@@ -1,8 +1,8 @@
-const name = 'Readme structure';
-const description = 'Include helpful topics in the project readme file';
+const name = "Readme structure";
+const description = "Include helpful topics in the project readme file";
 
 const pattern = /^readme\.md$/i;
-const headingPattern = /^#+\s*(.+)$/mg;
+const headingPattern = /^#+\s*(.+)$/gm;
 
 async function audit(artifacts, context) {
   const fileName = artifacts.filePaths.find(filePath => pattern.test(filePath));
@@ -17,11 +17,11 @@ async function audit(artifacts, context) {
     details: {
       items: headings.map(heading => ({ heading }))
     }
-  }
+  };
 }
 
 module.exports = {
   name,
   description,
   audit
-}
+};

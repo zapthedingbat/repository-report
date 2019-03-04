@@ -1,18 +1,18 @@
-const { spawn } = require('child_process');
+const { spawn } = require("child_process");
 
 function clone(token, url, localWorkingDirectory) {
   const cloneUrl = new URL(url);
-  cloneUrl.username = 'x-access-token';
+  cloneUrl.username = "x-access-token";
   cloneUrl.password = token;
 
   return new Promise((resolve, reject) => {
-    const gitProcess = spawn('git', [
-      'clone',
+    const gitProcess = spawn("git", [
+      "clone",
       cloneUrl.href,
-      localWorkingDirectory,
+      localWorkingDirectory
     ]);
-    
-    gitProcess.on('close', function (code) {
+
+    gitProcess.on("close", function(code) {
       if (code === 0) {
         resolve(localWorkingDirectory);
       } else {
@@ -22,4 +22,4 @@ function clone(token, url, localWorkingDirectory) {
   });
 }
 
-module.exports = exports = clone
+module.exports = exports = clone;

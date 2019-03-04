@@ -1,12 +1,12 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-function writeFiles(dir, extension = 'report') {
+function writeFiles(dir, extension = "report") {
   return function createWriter(name) {
     const stream = fs.createWriteStream(path.join(dir, `${name}.${extension}`));
     return function writer(data) {
       return new Promise((resolve, reject) => {
-        stream.write(data, (err) => {
+        stream.write(data, err => {
           if (err) {
             reject(err);
           } else {
@@ -14,8 +14,8 @@ function writeFiles(dir, extension = 'report') {
           }
         });
       });
-    }
-  }
+    };
+  };
 }
 
 module.exports = exports = writeFiles;
