@@ -1,9 +1,14 @@
 const getGenerators = require('./generators');
+const logger = require('../logger');
 
-async function generateReports(appId, owner, results) {
-  const generators = getGenerators(appId, owner);
+async function generateReports(appId, results) {
+  const generators = getGenerators(appId);
   for (generate of generators) {
-    await generate(results);
+    try {
+      await generate(results);
+    } catch(err){
+      logger.error(err, 'error generating report');
+    }
   }
 }
 

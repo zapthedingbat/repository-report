@@ -229,7 +229,7 @@ function renderAll(fn, ary) {
   return ary.map(fn).join('');
 }
 
-function html(writer, appId, owner) {
+function html(writer) {
   return async function generate(results) {
     for (result of results) {
       const write = writer(result.installation.account.login);

@@ -4,7 +4,7 @@ const proxyquire = require('proxyquire');
 describe('Installation', function () {
   let sandbox;
   let github;
-  let processRepository;
+  let auditRepository;
 
   before(function () {
     sandbox = sinon.createSandbox();
@@ -12,10 +12,10 @@ describe('Installation', function () {
       post: sandbox.stub(),
       getPaginated: sandbox.stub()
     };
-    processRepository = sandbox.stub();
-    processInstallationRepositories = proxyquire('../src/installation', {
+    auditRepository = sandbox.stub();
+    auditInstallation = proxyquire('../src/installation', {
       './github': github,
-      './repository': processRepository
+      './repository': auditRepository
     });
   });
   
@@ -26,21 +26,22 @@ describe('Installation', function () {
   it('should audit the repositories for an installation', async function () {
     github.post.resolves({ token: 'test installation token' });
     const mockRepositories = [
-      { owner: { login: 'test owner' }, fork: false, archived: false },
-      { owner: { login: 'test owner' }, fork: false, archived: false }
+      { owner: { id: 'test owner' }, fork: false, archived: false },
+      { owner: { id: 'test owner' }, fork: false, archived: false }
     ]
     const mockResults = {};
     github.getPaginated.resolves(mockRepositories);
-    processRepository.resolves(mockResults);
+    auditRepository.resolves(mockResults);
 
-    await processInstallationRepositories({
+    await auditInstallation({
+      account: { id: 'test owner' },
       access_tokens_url: 'test access_tokens_url',
       repositories_url: 'test repositories_url'
-    }, 'test owner', 'test token');
+    }, 'test token');
 
     sinon.assert.calledWith(github.post, 'test token', 'test access_tokens_url');
-    sinon.assert.calledWith(github.getPaginated, 'test installation token', 'test repositories_url?type=sources');
-    sinon.assert.calledWith(processRepository, 'test installation token', mockRepositories[0]);
-    sinon.assert.calledWith(processRepository, 'test installation token', mockRepositories[1]);
+    sinon.assert.calledWith(github.getPaginated, 'test installation token', 'test repositories_url');
+    sinon.assert.calledWith(auditRepository, 'test installation token', mockRepositories[0]);
+    sinon.assert.calledWith(auditRepository, 'test installation token', mockRepositories[1]);
   });
 });

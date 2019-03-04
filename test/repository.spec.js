@@ -5,7 +5,6 @@ describe('Repository', function () {
   let sandbox;
   let github;
   let readFile;
-  let audits;
 
   before(function () {
     sandbox = sinon.createSandbox();

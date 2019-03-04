@@ -6,21 +6,19 @@ const github = require('../src/github');
 
 describe('Worker', function () {
   let sandbox;
-  let processInstallationRepositories;
+  let auditInstallation;
   let worker;
 
   before(function () {
     sandbox = sinon.createSandbox();
     sandbox.stub(dotenv, 'config');
     process.env.GITHUB_APP_IDENTIFIER = '';
-    process.env.GITHUB_OWNER = ''
     sandbox.stub(process.env, 'GITHUB_APP_IDENTIFIER').value('test app id');
-    sandbox.stub(process.env, 'GITHUB_OWNER').value('test owner');
-    processInstallationRepositories = sandbox.stub();
+    auditInstallation = sandbox.stub();
     generateReports = sandbox.stub();
     worker = proxyquire('../src/worker', {
       './github': github,
-      './installation': processInstallationRepositories,
+      './installation': auditInstallation,
       './report': generateReports
     });
   });
@@ -43,9 +41,9 @@ describe('Worker', function () {
     await worker(createWriter, render);
 
     sinon.assert.calledWith(github.getAppToken, 'test key', 'test app id');
-    sinon.assert.calledWith(processInstallationRepositories, testInstallations[0], 'test owner', 'test app token');
-    sinon.assert.calledWith(processInstallationRepositories, testInstallations[1], 'test owner', 'test app token');
-    sinon.assert.calledWith(generateReports, 'test app id', 'test owner', [{
+    sinon.assert.calledWith(auditInstallation, testInstallations[0], 'test app token');
+    sinon.assert.calledWith(auditInstallation, testInstallations[1], 'test app token');
+    sinon.assert.calledWith(generateReports, 'test app id', [{
       installation: { account: { login: "test installation one" }, repository_selection: "all" },
       repositories: undefined
     }, {

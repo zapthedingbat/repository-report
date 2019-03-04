@@ -10,7 +10,6 @@ const keyPath = path.join(__dirname, '../.keys/github-private-key.pem');
 
 async function worker() {
   const appId = process.env.GITHUB_APP_IDENTIFIER;
-  const owner = process.env.GITHUB_OWNER;
 
   const key = fs.readFileSync(keyPath);
   const appToken = await github.getAppToken(key, appId);
@@ -18,14 +17,14 @@ async function worker() {
 
   const results = [];
   for (const installation of installations) {
-    const repositoryResults = await auditInstallation(installation, owner, appToken);
+    const repositoryResults = await auditInstallation(installation, appToken);
     results.push({
       installation,
       repositories: repositoryResults
     });
   }
 
-  await generateReports(appId, owner, results);
+  await generateReports(appId, results);
 };
 
 module.exports = worker;
