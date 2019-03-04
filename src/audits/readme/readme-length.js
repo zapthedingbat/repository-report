@@ -1,7 +1,8 @@
-const name = 'Readme structure';
-const description = 'Readme file should provide helpful information about the most important aspects of the project.';
+const name = 'Readme length';
+const description = 'Readme file should provide a reasonable amount of information.';
 
 const pattern = /^readme\.md$/i;
+const headingPattern = /^\s*#+\s*.+$/mg;
 const wordPattern = /\s+/g;
 
 async function audit(artifacts, context) {
@@ -9,7 +10,9 @@ async function audit(artifacts, context) {
   let wordCount = 0;
   if (fileName) {
     const fileContent = await context.readFile(fileName);
-    wordCount = fileContent.split(wordPattern).length;
+    wordCount = fileContent
+      .replace(headingPattern, '')
+      .split(wordPattern).length;
   }
   return {
     score: wordCount > 50 ? 1 : 0
