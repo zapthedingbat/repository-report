@@ -1,3 +1,7 @@
+const icons = require("octicons");
+
+
+
 function document(fn, title) {
   return function(...args) {
     return `<!doctype html>
@@ -77,10 +81,10 @@ function renderRepositoryResultsSummary(results) {
   const total = results.reduce((p, result) => p + result.result.score, 0);
   const score = total / results.length;
   return `
-  <div class="flex-column">
-    <div class="d-flex justify-content-between align-items-center">
-      <h6 class="text-${scoreClass(score)}">Score</h6>
-      ${badge(score)}
+  <div>
+    <h6 class="text-${scoreClass(score)}">Score</h6>
+    <div class="progress">
+      <div class="progress-bar bg-${scoreClass(score)}" role="progressbar" style="width: ${score * 100}%" aria-valuenow="${score * 100}" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
   </div>
   `;
@@ -183,11 +187,14 @@ function renderRepository(repository, index) {
     </div>
     -->
     <div class="card-body">
-      <h3 class="card-title">
-        <a class="repository-link" href="${repo.html_url}">
-        ${repo.name}
-        </a>
-      </h3>
+      <div class="card-title d-flex justify-content-between align-self-center">
+        <h3>
+          <a class="repository-link" href="${repo.html_url}">
+          ${repo.name}
+          </a>
+        </h3>
+        <a href="${repo.html_url}/settings" title="settings">${icons.gear.toSVG()}</a>
+      </div>
       <blockquote class="blockquote card-subtitle">
         ${renderRepositoryDescription(repo.description)}
       </blockquote>
@@ -232,9 +239,6 @@ function renderResult(result) {
         }">${result.installation.account.login}</a></h1>
         <p class="lead">
           <!-- Summary lead -->
-        </p>
-        <p>
-          Installation: ${result.installation.created_at}
         </p>
     </div>
     <div class="row">

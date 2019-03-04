@@ -7,6 +7,7 @@
     "dotenv": "^6.1.0",
     "jsonwebtoken": "^8.4.0",
     "node-fetch": "^2.2.1",
+    "octicons": "^8.5.0",
     "pino": "^5.11.1"
   },
   "devDependencies": {
