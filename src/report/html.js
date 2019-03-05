@@ -1,8 +1,127 @@
 const icons = require("octicons");
 
+function renderDaysAgo(dateStr) {
+  const date = new Date(dateStr);
+  const msDay = 1000 * 60 * 60 * 24;
+  const days = Math.floor((Date.now() - date.getTime()) / msDay);
 
+  if (days === 0) {
+    return 'today';
+  }
 
-function document(fn, title) {
+  if (days === 1) {
+    return 'yesterday';
+  }
+
+  return `${days} days ago`;
+}
+
+function renderRepositoryDetailsSummary(repo) {
+  return `
+  <h5>Activity</h5>
+  <div>Created <strong>${renderDaysAgo(repo.created_at)}</strong></div>
+  <div>Pushed to <strong>${renderDaysAgo(repo.pushed_at)}</strong></div>
+  `;
+}
+
+function renderCriteriaResult(result, index) {
+  return `
+  <div>${result.details.title}: ${result.result}</div>
+  `;
+}
+
+function renderClassificationCriteriaResult(result, index) {
+  return `
+  <h6>${result.details.title}</h6>
+  ${renderAll(renderCriteriaResult, result.criteriaResults)}
+  `;
+}
+
+function renderRepositoryModelSummary(repo, results) {
+  return `
+  <h5>Maturity Model</h5>
+  <div class="display-4 ${results.matched.name}">${results.matched.title}</div>
+  <p>
+    ${results.matched.description}
+  </p>
+
+  <div>
+    ${renderAll(renderClassificationCriteriaResult, results.classificationCriteriaResults)}
+  </div>
+  `;
+}
+
+function renderRepositoryDescription(description) {
+  return description
+    ? `<p>${description}</p>`
+    : `<p class="text-muted">No description set</p>`;
+}
+
+function renderRepositoryResult(repositoryResult) {
+  return `
+  <div class="card w-100 my-2">
+  <div class="card-body">
+  <pre>${JSON.stringify(repositoryResult, null, 2)}</pre>
+  </div>
+  </div>`;
+
+  return `
+  <div class="card w-100 my-2">
+    <div class="card-body">
+      <div class="card-title d-flex justify-content-between align-self-center">
+        <h2>
+          <a class="repository-link" href="${repo.html_url}">
+          ${repositoryResult.name}
+          </a>
+        </h2>
+        <a href="${repositoryResult.html_url}/settings" title="settings">${icons.gear.toSVG()}</a>
+      </div>
+      <blockquote class="blockquote card-subtitle">
+        ${renderRepositoryDescription(repositoryResult.description)}
+      </blockquote>
+
+      <pre>${JSON.stringify(repositoryResult, null, 2)}</pre>
+
+      <!--
+      <div class="row">
+        <div class="col-sm-4">
+          $renderRepositorySummary(repositoryResult.repository)
+        </div>
+
+        <div class="col-sm-8">
+          $renderRepositoryModelSummary(repositoryResults)
+        </div>
+      </div>
+      -->
+    </div>
+  </div>
+  `;
+}
+
+function renderRepositoryResults(repositoryResults) {
+  return renderAll(renderRepositoryResult, repositoryResults);  
+}
+
+function withInstallation(fn, installation) {
+  return function(...args) {
+    return `
+  <div class="installation">
+    <div class="text-center">
+      <img src="${
+        installation.account.avatar_url
+      }" alt="${installation.account.login}" width="72" height="72">
+      <h1 class="display-4"><a href="${
+        installation.account.html_url
+      }">${installation.account.login}</a></h1>
+    </div>
+    <div class="row">
+      ${fn(...args)}
+    </div>
+  </div>`;
+  };
+}
+
+function withDocument(fn, title) {
   return function(...args) {
     return `<!doctype html>
 <html>
@@ -24,240 +143,21 @@ function document(fn, title) {
   };
 }
 
-function scoreClass(score) {
-  if (score === 0) {
-    return "danger";
-  }
-
-  if (score === 1) {
-    return "success";
-  }
-
-  return "warning";
-}
-
-function badge(score) {
-  return `
-  <span title="Score: ${score}" class="badge badge-pill badge-${scoreClass(
-    score
-  )}">${score}</span>
-  `;
-}
-
-function renderRepositoryResult(result) {
-  return `
-  <li class="list-group-item flex-column">
-    <div class="d-flex justify-content-between align-items-center">
-      <h6 class="text-${scoreClass(result.result.score)}">${result.name}</h6>
-      ${badge(result.result.score)}
-    </div>
-    <p>${result.description}</p>
-
-    <div>
-      ${renderRepositoryResultDetails(result.result.details)}
-    </div>
-  </li>
-  `;
-}
-
-function renderRepositoryResultDetails(details) {
-  if (!details) {
-    return "";
-  }
-  if (details.items && details.items.length > 0) {
-    const keys = Object.keys(details.items[0]);
-    return `<table class="repository-report-details">
-    <tr>${keys.map(key => `<th>${key}</th>`).join("")}</tr>
-    ${details.items
-      .map(
-        item => `<tr>${keys.map(key => `<td>${item[key]}</td>`).join("")}</tr>`
-      )
-      .join("")}
-    </table>`;
-  }
-}
-
-function renderRepositoryResultsSummary(results) {
-  const total = results.reduce((p, result) => p + result.result.score, 0);
-  const score = total / results.length;
-  return `
-  <div>
-    <h6 class="text-${scoreClass(score)}">Score</h6>
-    <div class="progress">
-      <div class="progress-bar bg-${scoreClass(score)}" role="progressbar" style="width: ${score * 100}%" aria-valuenow="${score * 100}" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-  </div>
-  `;
-}
-
-function renderRepositoryLanguage(language) {
-  return language
-    ? language
-    : `<span class="text-muted">No language detected</span>`;
-}
-
-function renderDateDays(dateStr) {
-  const date = new Date(dateStr);
-  const options = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric"
-  };
-  const dtf = new Intl.DateTimeFormat("en-US", options);
-  const displayDate = dtf.format(date);
-
-  // RelativeTimeFormat not available in Nodejs yet
-  const msDay = 1000 * 60 * 60 * 24;
-  const days = Math.floor((Date.now() - date.getTime()) / msDay);
-  return `${displayDate} <span class="text-muted">(${days} days ago)</span>`;
-}
-
-function renderRepositoryDetails(repo) {
-  return `
-  <dl class="row">
-
-    <dt class="col-sm-3">Created<dt>
-    <dd class="col-sm-9">${renderDateDays(repo.created_at)}</dd>
-
-    <dt class="col-sm-3">Most recent push<dt>
-    <dd class="col-sm-9">${renderDateDays(repo.pushed_at)}</dd>
-
-    <dt class="col-sm-3">Language<dt>
-    <dd class="col-sm-9">${renderRepositoryLanguage(repo.language)}</dd>
-
-    <dt class="col-sm-3">Size<dt>
-    <dd class="col-sm-9">${repo.size}</dd>
-
-    <dt class="col-sm-3">Stargazers<dt>
-    <dd class="col-sm-9">${repo.stargazers_count}</dd>
-
-    <dt class="col-sm-3">Watchers<dt>
-    <dd class="col-sm-9">${repo.watchers_count}</dd>
-
-    <dt class="col-sm-3">Issues<dt>
-    <dd class="col-sm-9">${repo.has_issues}</dd>
-
-    <dt class="col-sm-3">Projects<dt>
-    <dd class="col-sm-9">${repo.has_projects}</dd>
-
-    <dt class="col-sm-3">Downloads<dt>
-    <dd class="col-sm-9">${repo.has_downloads}</dd>
-
-    <dt class="col-sm-3">Wiki<dt>
-    <dd class="col-sm-9">${repo.has_wiki}</dd>
-
-    <dt class="col-sm-3">Pages<dt>
-    <dd class="col-sm-9">${repo.has_pages}</dd>
-
-    <dt class="col-sm-3">Forks<dt>
-    <dd class="col-sm-9">${repo.forks_count}</dd>
-
-    <dt class="col-sm-3">Mirror<dt>
-    <dd class="col-sm-9">${repo.mirror_url}</dd>
-
-    <dt class="col-sm-3">Archived<dt>
-    <dd class="col-sm-9">${repo.archived}</dd>
-
-    <dt class="col-sm-3">Open issues<dt>
-    <dd class="col-sm-9">${repo.open_issues_count}</dd>
-
-    <dt class="col-sm-3">Watchers<dt>
-    <dd class="col-sm-9">${repo.watchers}</dd>
-
-    <dt class="col-sm-3">Default branch<dt>
-    <dd class="col-sm-9">${repo.default_branch}</dd>
-  </dl>`;
-}
-
-function renderRepositoryDescription(description) {
-  return description
-    ? `<p>${description}</p>`
-    : `<p class="text-muted">No description set</p>`;
-}
-
-function renderRepository(repository, index) {
-  const repo = repository.repository;
-  const results = repository.results;
-  return `
-  <div class="repository card w-100 my-1">
-    <!--
-    <div class="card-header">
-      
-    </div>
-    -->
-    <div class="card-body">
-      <div class="card-title d-flex justify-content-between align-self-center">
-        <h3>
-          <a class="repository-link" href="${repo.html_url}">
-          ${repo.name}
-          </a>
-        </h3>
-        <a href="${repo.html_url}/settings" title="settings">${icons.gear.toSVG()}</a>
-      </div>
-      <blockquote class="blockquote card-subtitle">
-        ${renderRepositoryDescription(repo.description)}
-      </blockquote>
-
-      <a data-toggle="collapse" href="#repository-details-${index}" role="button" aria-expanded="false">Details</a>
-      <div class="collapse" id="repository-details-${index}">
-        ${renderRepositoryDetails(repo)}
-      </div>
-      <div>
-        ${renderRepositoryResultsSummary(results)}
-      </div>
-    </div>
-    <div class="list-group list-group-flush" id="repository-results-${index}">
-      ${renderAll(renderRepositoryResult, results)}
-    </div>
-  </div>`;
-}
-
-function totalScore(results) {
-  const total = results.reduce((p, result) => p + result.result.score, 0);
-  return total / results.length;
-}
-
-function sortByTotalScore(repoA, repoB) {
-  const scoreA = totalScore(repoA.results);
-  const scoreB = totalScore(repoB.results);
-  return scoreA - scoreB;
-}
-
-function renderResult(result) {
-  // Order repositories by score
-  const orderedRepos = result.repositories.sort(sortByTotalScore);
-
-  return `
-  <div class="installation">
-    <div class="py-5 text-center">
-        <img class="d-block mx-auto mb-4" src="${
-          result.installation.account.avatar_url
-        }" alt="" width="72" height="72">
-        <h1 class="display-4"><a href="${
-          result.installation.account.html_url
-        }">${result.installation.account.login}</a></h1>
-        <p class="lead">
-          <!-- Summary lead -->
-        </p>
-    </div>
-    <div class="row">
-      ${renderAll(renderRepository, orderedRepos)}
-    </div>
-  </div>`;
-}
-
 function renderAll(fn, ary) {
   return ary.map(fn).join("");
 }
 
 function html(writer) {
-  return async function generate(results) {
-    for (result of results) {
-      const write = writer(result.installation.account.login);
-      const render = document(renderResult, result.installation.account.login);
-      await write(render(result));
-    }
+  return async function generate(installation, repositoryResults) {
+
+    // Create rendering function for installation
+    const render = withDocument(withInstallation(renderRepositoryResults, installation), installation.account.login);
+    
+    // Create a report writer with the installation account name
+    const write = writer(installation.account.login);
+
+    // Render the report result to the writer 
+    await write(render(repositoryResults, installation));
   };
 }
 

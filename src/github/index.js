@@ -27,6 +27,9 @@ async function getPaginated(token, url, itemsFn) {
   while (nextUrl) {
     const response = await githubFetch(token, nextUrl, "GET");
     nextUrl = null;
+    if (response.status === 204) {
+      break;  
+    }
     const result = await response.json();
     items.push(...itemsFn(result));
     const linkHeader = response.headers.get("link");
