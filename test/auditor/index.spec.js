@@ -1,23 +1,27 @@
 const chai = require("chai");
 const sinon = require("sinon");
-const auditor = require("../../src/auditor");
+const createAuditor = require("../../src/auditor");
 
 describe('auditor', function () {
-  it('should return assets that are the result of each gatherer', async function () {
-    const gatherers = {
-      one: sinon.stub().resolves("asset one"),
-      two: sinon.stub().resolves("asset two")
+  it('should execute each audit', async function () {
+    const mockArtefacts = {
+      test: true
     }
-    const gather = auditor(gatherers);
-    const testRepository = 'test repository'
 
-    const actual = await gather(testRepository);
+    const auditor = createAuditor();
 
-    sinon.assert.calledWith(gatherers.one, testRepository);
-    sinon.assert.calledWith(gatherers.two, testRepository);
+    const actual = await auditor.getAuditResults(mockArtefacts);
+
     chai.expect(actual).to.eql({
-      one: 'asset one',
-      two: 'asset two'
+      one: '1',
+      two: '2'
     });
+  });
+
+  it('should return details of each audit', async function () {
+
+    const auditor = createAuditor();
+
+    chai.expect(auditor.details).to.eql([{}, {}]);
   })
 })

@@ -8,5 +8,5 @@ module.exports = exports = async function worker(repositories, gather, auditor, 
       results: auditResults
     })
   }
-  await generateReport(repositoryResults, auditor.audits);
+  await generateReport(repositoryResults, auditor.details);
 }
