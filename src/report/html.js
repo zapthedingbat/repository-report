@@ -128,7 +128,7 @@ function renderRepositoryDescription(description) {
 }
 
 function renderResults(result) {
-  const repo = result.artifacts.repository;
+  const repo = result.artefacts.repository;
   return `
 <div class="list-group-item">
 
@@ -150,8 +150,8 @@ function renderResults(result) {
   <div class="row my-4">
     <div class="col-sm-4">
       ${renderActivity(repo)}
-      ${renderContributors(result.artifacts.contributors)}
-      ${renderRunbooks(result.artifacts.runbooks)}
+      ${renderContributors(result.artefacts.contributors)}
+      ${renderRunbooks(result.artefacts.runbooks)}
     </div>
     <div class="col-sm-8">
       ${renderClassification(result.classification)}
@@ -198,7 +198,7 @@ function renderResult(result) {
   if (result.results.length === 0) {
     return '<span class="text-muted text-center p-4">No Results</span>';
   }
-  // TODO: Pass classifications in as an artifact from the report
+  // TODO: Pass classifications in as an artefact from the report
   const classifications = result.results[0].classification.classificationCriteriaResults.map(ccr => ccr.details);
   return `
 <div class="my-4">

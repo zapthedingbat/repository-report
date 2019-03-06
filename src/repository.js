@@ -7,7 +7,7 @@ const getConfluencePages = require('./get-confluence-pages');
 module.exports = async function auditRepository(token, repository) {
   logger.debug({ name: repository.full_name }, "auditing repository");
 
-  // Gather artifacts
+  // Gather artefacts
   const files = await github.getTreeFiles(
     token,
     repository.owner.login,
@@ -25,7 +25,7 @@ module.exports = async function auditRepository(token, repository) {
   })).sort((a, b) => b.contributions - a.contributions);
 
   const runbooks = await getConfluencePages(repository.html_url);
-  const artifacts = {
+  const artefacts = {
     repository,
     filePaths,
     contributors,
@@ -45,10 +45,10 @@ module.exports = async function auditRepository(token, repository) {
   };
 
   // Apply auditing methods
-  const classification = await maturityModel.classify(artifacts, context);
+  const classification = await maturityModel.classify(artefacts, context);
 
   return {
-    artifacts,
+    artefacts,
     classification
   }
 };

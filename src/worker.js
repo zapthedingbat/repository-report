@@ -1,12 +1,12 @@
 module.exports = exports = async function worker(repositories, gather, auditor, generateReport) {
   const repositoryResults = [];
   for (let repository of repositories) {
-    const artifacts = await gather(repository);
-    const auditResults = await auditor.audit(artifacts);
+    const artefacts = await gather(repository);
+    const auditResults = await auditor.getAuditResults(artefacts);
     repositoryResults.push({
-      artifacts,
+      artefacts,
       results: auditResults
     })
   }
-  await generateReport(repositoryResults, auditor.auditDetails);
+  await generateReport(repositoryResults, auditor.audits);
 }

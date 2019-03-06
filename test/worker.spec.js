@@ -13,8 +13,8 @@ describe("Worker", function() {
   });
 
   it("should gather assets and audit each repository", async function() {
-    const mockArtifacts = { test: 'artifact1' };
-    const gather = sandbox.stub().resolves(mockArtifacts);
+    const mockartefacts = { test: 'artefact1' };
+    const gather = sandbox.stub().resolves(mockartefacts);
     const mockAuditResults = [ 'test audit result' ];
     const auditor = { audit: sandbox.stub().resolves(mockAuditResults) };
     const generateReport = sandbox.stub().resolves();
@@ -24,7 +24,7 @@ describe("Worker", function() {
 
     sinon.assert.calledWith(gather, mockRepository);
     sinon.assert.calledWith(generateReport, [{
-      artifacts: { test: 'artifact1' },
+      artefacts: { test: 'artefact1' },
       results: mockAuditResults
     }]);
   });
