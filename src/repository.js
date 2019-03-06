@@ -2,6 +2,7 @@ const github = require("./github");
 const createGithubReadFile = require("./create-github-read-file");
 const logger = require("./logger");
 const maturityModel = require("./maturity-model");
+const getConfluencePages = require('./get-confluence-pages');
 
 module.exports = async function auditRepository(token, repository) {
   logger.debug({ name: repository.full_name }, "auditing repository");
@@ -15,12 +16,20 @@ module.exports = async function auditRepository(token, repository) {
   );
   const filePaths = files.tree.map(file => file.path);
   
-  let contributors = await github.getPaginated(token, repository.contributors_url, x => x);
-  
+  const githubContributors = await github.getPaginated(token, repository.contributors_url, x => x);
+  const contributors = githubContributors.map(contributor => ({
+    title: contributor.login,
+    url: contributor.html_url,
+    imageUrl: contributor.avatar_url + '&s=40',
+    contributions: contributor.contributions
+  })).sort((a, b) => b.contributions - a.contributions);
+
+  const runbooks = await getConfluencePages(repository.html_url);
   const artifacts = {
     repository,
     filePaths,
-    contributors
+    contributors,
+    runbooks
   };
 
   // Construct context

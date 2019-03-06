@@ -27,6 +27,19 @@ function hasManyContributors() {
   }
 }
 
+function hasRunbook() {
+  return {
+    details: {
+      name: 'hasRunbook',
+      title: 'Has link from runbook',
+      description: 'A runbook should link to the repository. <a href="https://confluence.condenastint.com/pages/createpage-entervariables.action?templateId=65175553&spaceKey=VDP&title=&newSpaceKey=VDP&fromPageId=22251152">Create a page in confluence</a> that includes a link to the repository to help anyone providing support for the project.'
+    },
+    test: async function (artifacts, context) {
+      return artifacts.runbooks.length > 0;
+    }
+  }
+}
+
 function hasGoodReadme() {
   const pattern = /^readme\.md$/i;
   const headingPattern = /(^\s*#+\s*.+$|^[^\r\n]+={3,}\s*$)/gm;
@@ -61,6 +74,20 @@ function hasReadme() {
       name: 'hasReadme',
       title: `Has readme file`,
       description: 'Projects should have a readme file to help other to learn about it.'
+    },
+    test: async function (artifacts, context) {
+      return artifacts.filePaths.some(filePath => pattern.test(filePath));
+    }
+  }
+}
+
+function hasLogging() {
+  const pattern = /(logger|logging|)/i;
+  return {
+    details: {
+      name: 'hasCiConfig',
+      title: `Has CI configuration`,
+      description: 'Projects should have a continuous integration pipeline.'
     },
     test: async function (artifacts, context) {
       return artifacts.filePaths.some(filePath => pattern.test(filePath));
@@ -125,6 +152,7 @@ const model = {
         pushedWithingDays(30),
         hasManyContributors(),
         hasGoodReadme(),
+        hasRunbook(),
         hasCiConfig()
       ]
     },
@@ -156,7 +184,7 @@ const model = {
       details: {
         name: 'sustain',
         title: 'Sustain',
-        description: 'This project has been around for some time but is no longer not not well maintained. Consider either decommissioning steps or engaging new contributors to take on stewardship.',
+        description: 'This project has been around for some time but is no longer or not well maintained. Consider either decommissioning steps or engaging new contributors to take on it\'s stewardship.',
       },
       criteria: [
         pushedWithingDays(365),

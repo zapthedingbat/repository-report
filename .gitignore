@@ -3,6 +3,7 @@ npm-debug.log
 .env
 .keys
 .cache
+.cache-confluence
 .reports
 
 # IDE Settings
