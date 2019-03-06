@@ -15,20 +15,7 @@ function createAuditDetails(audits) {
   return Object.values(audits).map(audit => audit.details);
 }
 
-module.exports = exports = function create(/* configuration */) { 
-  // TODO: Pick audits based on configuration
-
-  const audits = {
-    one: {
-      details: { },
-      getResults: async () => '1'
-    },
-    two: {
-      details: { },
-      getResults: async () => '2'
-    }
-  }
-
+module.exports = exports = function create(audits) {
   return {
     getAuditResults: createGetAuditResults(audits),
     details: createAuditDetails(audits)

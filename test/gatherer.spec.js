@@ -1,6 +1,6 @@
 const chai = require("chai");
 const sinon = require("sinon");
-const gatherer = require("../../src/gather");
+const gatherer = require("../src/gatherer");
 
 describe('gatherer', function () {
   it('should return assets that are the result of each gatherer', async function () {
