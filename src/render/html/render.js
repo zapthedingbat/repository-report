@@ -194,19 +194,19 @@ function renderClassificationSummary(results, classifications) {
   `
 }
 
-function renderResult(result) {
-  if (result.results.length === 0) {
+function renderReport(report) {
+  if (report.results.length === 0) {
     return '<span class="text-muted text-center p-4">No Results</span>';
   }
   // TODO: Pass classifications in as an artefact from the report
-  const classifications = result.results[0].classification.classificationCriteriaResults.map(ccr => ccr.details);
+  const classifications = report.results[0].classification.classificationCriteriaResults.map(ccr => ccr.details);
   return `
 <div class="my-4">
-  ${renderClassificationSummary(result.results, classifications)}
+  ${renderClassificationSummary(report.results, classifications)}
 </div>
 
 <div class="list-group list-group-flush">
-  ${renderAll(renderResults, result.results)}
+  ${renderAll(renderResults, report.results)}
 </div>
 `;
 }
@@ -281,27 +281,8 @@ function renderAll(fn, ary) {
   return ary.map(fn).join("");
 }
 
-function html(writer) {
-  return async function generate(results) {
-    for (const result of results) {
-      // Create rendering function for installation
-      const render = withDocument(
-        withOrganisation(
-          renderResult,
-          result.document.title,
-          result.document.url,
-          result.document.imageUrl
-        ),
-        result.document.title
-      );
-      
-      // Create a report writer with the installation account name
-      const write = writer(result.document.title);
-
-      // Render the report result to the writer 
-      await write(render(result));
-    }
-  };
+module.exports = exports = {
+  withDocument,
+  withOrganisation,
+  renderReport
 }
-
-module.exports = exports = html;

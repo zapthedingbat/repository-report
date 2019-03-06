@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-function writeFiles(dir, extension = "report") {
+function writeFiles(dir, extension) {
   return function createWriter(name) {
     const stream = fs.createWriteStream(path.join(dir, `${name}.${extension}`));
     return function writer(data) {
