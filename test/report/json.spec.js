@@ -1,32 +1,33 @@
+const sinon = require("sinon");
 const chai = require("chai");
-const renderJson = require("../../src/report/render-json");
+const snapshot = require("../../test-support/snapshot");
+const json = require("../../src/report/json");
 
 const expect = chai.expect;
 
 describe("Report JSON", function() {
-  it("should render a report to JSON", function() {
-    const json = renderJson(
-      {
-        html_url: "test html_url",
-        full_name: "test full_name",
-        description: "test description"
-      },
-      [
-        {
-          name: "test name",
-          description: "test description",
-          result: {
-            score: 0,
-            details: {
-              items: [{ key: "value" }]
-            }
-          }
-        }
-      ]
-    );
+  let sandbox;
 
-    expect(json).to.equal(
-      '{"repository":{"html_url":"test html_url","full_name":"test full_name","description":"test description"},"results":[{"name":"test name","description":"test description","result":{"score":0,"details":{"items":[{"key":"value"}]}}}]}'
-    );
+  before(function() {
+    sandbox = sinon.createSandbox();
+  });
+
+  afterEach(function() {
+    sandbox.restore();
+  });
+
+  it("should render a report to the given writer", async function() {
+    const write = sandbox.stub();
+    const createWrite = sandbox.stub().returns(write);
+    const generate = json(createWrite, "test app id", "test owner");
+    await generate([
+      {
+        document: { title: 'test title' },
+        installation: {},
+        results: []
+      }
+    ]);
+
+    snapshot("./test/report/json.snapshot", write.lastCall.args[0]);
   });
 });

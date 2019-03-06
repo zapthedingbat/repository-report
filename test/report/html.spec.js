@@ -1,6 +1,6 @@
 const sinon = require("sinon");
 const chai = require("chai");
-const snapshot = require("../support/snapshot");
+const snapshot = require("../../test-support/snapshot");
 const html = require("../../src/report/html");
 
 const expect = chai.expect;
@@ -22,10 +22,9 @@ describe("Report HTML", function() {
     const generate = html(createWrite, "test app id", "test owner");
     await generate([
       {
-        installation: {
-          account: { login: "test login" }
-        },
-        repositories: []
+        document: { title: 'test title' },
+        installation: {},
+        results: []
       }
     ]);
 

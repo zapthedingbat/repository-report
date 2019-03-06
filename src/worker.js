@@ -2,7 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const github = require("./github");
 const generateReports = require("./report");
-
 const auditInstallation = require("./installation");
 
 // Load github app key
