@@ -1,4 +1,4 @@
-const github = require("./github");
+const github = require("./main");
 
 function createGithubReadFile(token, owner, name, branch) {
   return async function(path) {

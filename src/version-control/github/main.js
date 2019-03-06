@@ -1,7 +1,7 @@
 const { join: joinPath } = require("path");
 const { sign } = require("jsonwebtoken");
-const logger = require("../logger");
-const createCacheFetch = require("../cache-fetch");
+const logger = require("../../lib/logger");
+const createCacheFetch = require("../../lib/cache-fetch");
 
 const cacheDir = joinPath(__dirname, "../.cache");
 const cacheFetch = createCacheFetch(cacheDir);

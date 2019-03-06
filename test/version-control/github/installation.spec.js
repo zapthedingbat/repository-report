@@ -13,8 +13,8 @@ describe("Installation", function() {
       getPaginated: sandbox.stub()
     };
     auditRepository = sandbox.stub();
-    auditInstallation = proxyquire("../src/installation", {
-      "./github": github,
+    auditInstallation = proxyquire("../../../src/version-control/github/installation", {
+      "./main": github,
       "./repository": auditRepository
     });
   });

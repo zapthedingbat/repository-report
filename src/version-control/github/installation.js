@@ -1,6 +1,6 @@
-const github = require("./github");
+const github = require("./main");
 const auditRepository = require("./repository");
-const logger = require("./logger");
+const logger = require("../../lib/logger");
 
 async function auditInstallation(installation, token) {
   const installationToken = await github.post(

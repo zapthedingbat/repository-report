@@ -17,11 +17,12 @@ describe("Repository", function() {
     maturityModel = {
       classify: sandbox.stub().resolves()
     }
-    auditRepository = proxyquire("../src/repository", {
-      "./github": github,
-      "./create-github-read-file": createGithubReadFile,
-      "./get-confluence-pages": getConfluencePages,
-      "./maturity-model": maturityModel
+    auditRepository = proxyquire("../../../src/version-control/github/repository", {
+      "./main": github,
+      "./read-file": createGithubReadFile,
+      "./../../gather/confluence/get-confluence-pages": getConfluencePages,
+      "./../../report/maturity-model": maturityModel,
+      "./../../lib/logger": {}
     });
   });
 

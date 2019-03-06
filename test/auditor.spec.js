@@ -24,7 +24,6 @@ describe('auditor', function () {
   });
 
   it('should return details of each audit', async function () {
-
     const auditor = createAuditor({
       test: { details: 'test details' }
     });

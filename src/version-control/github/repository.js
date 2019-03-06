@@ -1,8 +1,8 @@
-const github = require("./github");
-const createGithubReadFile = require("./create-github-read-file");
-const logger = require("./logger");
-const maturityModel = require("./maturity-model");
-const getConfluencePages = require('./get-confluence-pages');
+const github = require("./main");
+const createGithubReadFile = require("./read-file");
+const logger = require("./../../lib/logger");
+const maturityModel = require("../../report/maturity-model");
+const getConfluencePages = require('./../../gather/confluence/get-confluence-pages');
 
 module.exports = async function auditRepository(token, repository) {
   logger.debug({ name: repository.full_name }, "auditing repository");

@@ -1,5 +1,5 @@
 const { join: joinPath } = require("path");
-const createCacheFetch = require("./cache-fetch");
+const createCacheFetch = require("../../lib/cache-fetch");
 
 const cacheDir = joinPath(__dirname, "./.cache-confluence");
 const cacheFetch = createCacheFetch(cacheDir);

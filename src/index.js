@@ -1,5 +1,5 @@
 const worker = require("./worker");
-const loader = require("./loader");
+const loader = require("./lib/loader");
 const createVersionControl = require("./version-control");
 const createGatherer = require("./gatherer");
 const createAuditor = require("./auditor");
