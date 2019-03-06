@@ -14,7 +14,7 @@ describe("Worker", function() {
     sandbox.stub(dotenv, "config");
     process.env.GITHUB_APP_IDENTIFIER = "";
     sandbox.stub(process.env, "GITHUB_APP_IDENTIFIER").value("test app id");
-    auditInstallation = sandbox.stub();
+    auditInstallation = sandbox.stub().resolves([])
     generateReports = sandbox.stub();
     worker = proxyquire("../src/worker", {
       "./github": github,
@@ -34,12 +34,18 @@ describe("Worker", function() {
     const render = sandbox.stub();
     const testInstallations = [
       {
-        repository_selection: "all",
-        account: { login: "test installation one" }
+        account: {
+          login: "test installation one",
+          avatar_url: "test avatar url",
+          html_url: "test html url"
+        }
       },
       {
-        repository_selection: "all",
-        account: { login: "test installation two" }
+        account: {
+          login: "test installation two",
+          avatar_url: "test avatar url",
+          html_url: "test html url"
+        }
       }
     ];
     sandbox.stub(github, "getInstallations").resolves(testInstallations);
@@ -49,28 +55,28 @@ describe("Worker", function() {
     sinon.assert.calledWith(github.getAppToken, "test key", "test app id");
     sinon.assert.calledWith(
       auditInstallation,
-      testInstallations[0],
-      "test app token"
+      testInstallations[0]
     );
     sinon.assert.calledWith(
       auditInstallation,
-      testInstallations[1],
-      "test app token"
+      testInstallations[1]
     );
-    sinon.assert.calledWith(generateReports, "test app id", [
+    sinon.assert.calledWith(generateReports, [
       {
-        installation: {
-          account: { login: "test installation one" },
-          repository_selection: "all"
+        document: {
+          title: "test installation one",
+          url: "test html url",
+          imageUrl: "test avatar url"
         },
-        repositories: undefined
+        results: []
       },
       {
-        installation: {
-          account: { login: "test installation two" },
-          repository_selection: "all"
+        document: {
+          title: "test installation two",
+          url: "test html url",
+          imageUrl: "test avatar url"
         },
-        repositories: undefined
+        results: []
       }
     ]);
   });

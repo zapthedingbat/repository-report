@@ -29,7 +29,7 @@ function create(cachePath) {
     if (await exists(cacheFile)) {
       cacheObject = JSON.parse(await readFile(cacheFile));
       logger.trace(
-        { cached: true, url, status: cacheObject.init.status },
+        { hash, cached: true, url, status: cacheObject.init.status },
         "fetch"
       );
     } else {
@@ -49,7 +49,7 @@ function create(cachePath) {
       }
 
       logger.trace(
-        { cached: false, url, status: cacheObject.init.status },
+        { hash, cached: false, url, status: cacheObject.init.status },
         "fetch"
       );
     }

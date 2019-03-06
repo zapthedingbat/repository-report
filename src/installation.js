@@ -24,7 +24,7 @@ async function auditInstallation(installation, token) {
   const auditResults = [];
   for (const repository of repositories) {
     const results = await auditRepository(installationToken.token, repository);
-    auditResults.push({ repository, results });
+    auditResults.push(results);
   }
   return auditResults;
 }

@@ -1,11 +1,13 @@
 const github = require("./github");
 const createGithubReadFile = require("./create-github-read-file");
-const audit = require("./audits");
 const logger = require("./logger");
+const maturityModel = require("./maturity-model");
+const getConfluencePages = require('./get-confluence-pages');
 
 module.exports = async function auditRepository(token, repository) {
   logger.debug({ name: repository.full_name }, "auditing repository");
 
+  // Gather artifacts
   const files = await github.getTreeFiles(
     token,
     repository.owner.login,
@@ -13,7 +15,24 @@ module.exports = async function auditRepository(token, repository) {
     repository.default_branch
   );
   const filePaths = files.tree.map(file => file.path);
+  
+  const githubContributors = await github.getPaginated(token, repository.contributors_url, x => x);
+  const contributors = githubContributors.map(contributor => ({
+    title: contributor.login,
+    url: contributor.html_url,
+    imageUrl: contributor.avatar_url + '&s=40',
+    contributions: contributor.contributions
+  })).sort((a, b) => b.contributions - a.contributions);
 
+  const runbooks = await getConfluencePages(repository.html_url);
+  const artifacts = {
+    repository,
+    filePaths,
+    contributors,
+    runbooks
+  };
+
+  // Construct context
   const readFile = createGithubReadFile(
     token,
     repository.owner.login,
@@ -21,14 +40,15 @@ module.exports = async function auditRepository(token, repository) {
     repository.default_branch
   );
 
-  const assets = {
-    repository,
-    filePaths
-  };
-
   const context = {
     readFile
   };
 
-  return await audit(assets, context);
+  // Apply auditing methods
+  const classification = await maturityModel.classify(artifacts, context);
+
+  return {
+    artifacts,
+    classification
+  }
 };
