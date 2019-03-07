@@ -12,7 +12,11 @@ function createGetAuditResults(audits) {
 }
 
 function createAuditDetails(audits) {
-  return Object.values(audits).map(audit => audit.details);
+  const auditDetails = {};
+  for (const auditName in audits) {
+    auditDetails[auditName] = audits[auditName].details;
+  }
+  return auditDetails;
 }
 
 module.exports = exports = function create(audits) {

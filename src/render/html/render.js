@@ -211,7 +211,7 @@ function renderReport(report) {
 `;
 }
 
-function withOrganisation(fn, name, url, imageUrl) {
+function withGroup(fn, name, url, imageUrl) {
   return function(...args) {
     return `
 <div class="container text-center py-4">
@@ -283,6 +283,6 @@ function renderAll(fn, ary) {
 
 module.exports = exports = {
   withDocument,
-  withOrganisation,
+  withGroup,
   renderReport
 }

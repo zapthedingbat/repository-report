@@ -1,4 +1,4 @@
-module.exports = exports = async function worker(repositories, gather, auditor) {
+module.exports = exports = async function builder(repositories, gather, auditor) {
   const repositoriesResults = [];
   for (let repository of repositories) {
     const artefacts = await gather(repository);

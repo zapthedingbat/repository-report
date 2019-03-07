@@ -9,9 +9,9 @@ const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 const exists = promisify(fs.exists);
 
-function getHash(url) {
+function getHash(url, headers) {
   const hashAlgo = crypto.createHash("md5");
-  return hashAlgo.update(url).digest("hex");
+  return hashAlgo.update(url + JSON.stringify(headers)).digest("hex");
 }
 
 function create(cachePath) {
@@ -21,7 +21,11 @@ function create(cachePath) {
 
   return async function cachedFetch(input, init) {
     const url = typeof input === "string" ? input : input.url;
-    const hash = getHash(url);
+    let headers = {};
+    if (init && init.headers) {
+      headers = init.headers
+    }
+    const hash = getHash(url, headers);
     const cacheFile = joinPath(cachePath, hash);
 
     let cacheObject;
