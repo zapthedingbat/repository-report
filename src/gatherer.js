@@ -7,9 +7,8 @@ module.exports = exports = function create(gatherers) {
       const gatherer = gatherers[gathererName];
       const value = await gatherer(repository);
       artefacts[gathererName] = value;
-      logger.debug({ gathererName, gathererValue: value }, 'Gather');
+      logger.debug({ gathererName }, 'Gather');
     }
-    logger.debug(artefacts, 'Gathered artefacts');
     return artefacts;
   }
 }

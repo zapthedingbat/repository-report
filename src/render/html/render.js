@@ -268,6 +268,8 @@ function withDocument(fn, title) {
         .text-sustain { color: var(--sustain); }
         .text-discard { color: var(--discard); }
 
+        svg.octicon { fill: currentColor };
+
       </style>
     </head>
     <body class="bg-light">

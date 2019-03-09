@@ -1,4 +1,3 @@
-const crypto = require("crypto");
 const fs = require("fs");
 const { join: joinPath } = require("path");
 const { promisify } = require("util");
@@ -9,28 +8,23 @@ const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 const exists = promisify(fs.exists);
 
-function getHash(url, headers) {
-  const hashAlgo = crypto.createHash("md5");
-  return hashAlgo.update(url + JSON.stringify(headers)).digest("hex");
-}
-
-function create(cachePath) {
+module.exports = exports = function create(cachePath, getHash, cachePredicate) {
   if (!fs.existsSync(cachePath)) {
     fs.mkdirSync(cachePath);
   }
 
   return async function cachedFetch(input, init) {
     const url = typeof input === "string" ? input : input.url;
-    let headers = {};
-    if (init && init.headers) {
-      headers = init.headers
+    if (!url.startsWith('https://')) {
+      const x = new Error();
+      throw x.stack;
     }
-    const hash = getHash(url, headers);
+    const hash = getHash(input, init);
     const cacheFile = joinPath(cachePath, hash);
 
     let cacheObject;
 
-    if (await exists(cacheFile)) {
+    if (cachePredicate(input, init) && await exists(cacheFile)) {
       cacheObject = JSON.parse(await readFile(cacheFile));
       logger.trace(
         { hash, cached: true, url, status: cacheObject.init.status },
@@ -61,6 +55,3 @@ function create(cachePath) {
     return new Response(cacheObject.body, cacheObject.init);
   };
 }
-
-module.exports = exports = create;
-exports.GetHash = getHash;

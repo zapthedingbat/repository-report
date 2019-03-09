@@ -1,20 +1,55 @@
 const path = require('path');
 const createCachedFetch = require("../../lib/cache-fetch");
+const createCacheExclude = require("../../lib/cache-exclude");
+const createGetHash = require('../../lib/get-hash');
 const getAppToken = require('./get-app-token');
 const createApi = require("./api");
 
-// Cache http requests on the file system
-const cacheDir = path.join(__dirname, "../../../.cache-test");
-const cachedFetch = createCachedFetch(cacheDir);
+const cacheDir = path.join(__dirname, "../../../.cache");
+const cacheExclude = createCacheExclude([/\/access_tokens$/]);
+const getHash = createGetHash([/\/installation\/repositories/]);
+const cachedFetch = createCachedFetch(cacheDir, getHash, cacheExclude);
 const api = createApi(cachedFetch);
 
-// Maps a github repository to a generic one
-function createRepository(repository) {
+function createGetFilePaths(token, owner, repo, branch) {
+  return function getFilePaths() {
+    return api.getFilePaths(token, owner, repo, branch);
+  }
+}
+
+function createGetContributors(token, contributorsUrl) {
+  return async function getContributors() {
+    const githubContributors = await api.getPaginated(token, 'GET', contributorsUrl, items => items);
+    return githubContributors.map(createContributor);
+  }
+}
+
+function createReadFile(token, owner, repo, branch) {
+  return function readFile(path) {
+    return api.readFile(token, owner, repo, branch, path);
+  }
+}
+
+function createContributor(contributor) {
+  return {
+    name: contributor.login,
+    url: contributor.html_url,
+    imageUrl: contributor.avatar_url,
+    contributions: contributor.contributions
+  };
+}
+
+function createRepository(repository, token) {
   return {
     title: repository.name,
     url: repository.html_url,
     settingsUrl: repository.html_url + '/settings',
-    description: repository.description
+    description: repository.description,
+    createdAt: new Date(repository.created_at),
+    pushedAt: new Date(repository.pushed_at),
+    getFilePaths: createGetFilePaths(token, repository.owner.login, repository.name, repository.default_branch),
+    getContributors: createGetContributors(token, repository.contributors_url),
+    readFile: createReadFile(token, repository.owner.login, repository.name, repository.default_branch)
   }
 }
 
@@ -23,7 +58,7 @@ function createGetRepositories(appToken, accessTokensUrl, repositoriesUrl) {
     const response = await api.request(appToken, 'POST', accessTokensUrl);
     const { token } = await response.json();
     const githubRepos = await api.getPaginated(token, 'GET', repositoriesUrl, items => items.repositories);
-    return githubRepos.map(repo => createRepository(repo));
+    return githubRepos.map(repo => createRepository(repo, token));
   }
 }
 

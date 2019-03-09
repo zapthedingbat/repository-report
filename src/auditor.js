@@ -1,10 +1,10 @@
 
 function createGetAuditResults(audits) {
-  return async function getAuditResults(artefacts) {
+  return function getAuditResults(artefacts) {
     const auditResults = {};
     for (const auditName in audits) {
       const audit = audits[auditName];
-      const result = await audit.getResults(artefacts);
+      const result = audit.getResults(artefacts);
       auditResults[auditName] = result;
     }
     return auditResults;
