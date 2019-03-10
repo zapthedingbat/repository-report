@@ -1,33 +1,44 @@
-const fs = require("fs");
-const path = require("path");
-const github = require("./github");
-const generateReports = require("./report");
-const auditInstallation = require("./installation");
+const loader = require("./lib/loader");
+const logger = require("./lib/logger");
+const createWriter = require("./lib/file-writer");
+const createVersionControl = require("./version-control");
+const createGatherer = require("./gatherer");
+const createAuditor = require("./auditor");
+const createReportRenderer = require("./report/renderer");
+const reportBuilder = require("./report/builder");
 
-// Load github app key
-const keyPath = path.join(__dirname, "../.keys/github-private-key.pem");
+module.exports = exports = async function worker() { 
 
-async function worker() {
-  const appId = process.env.GITHUB_APP_IDENTIFIER;
-  const key = fs.readFileSync(keyPath);
-  const appToken = await github.getAppToken(key, appId);
-  const installations = await github.getInstallations(appToken);
+  const load = loader(__dirname);
 
-  const results = [];
-  for (const installation of installations) {
-    const auditResults = await auditInstallation(installation, appToken);
-    results.push({
-      document: {
-        // TODO: Abstract this form github models
-        title: installation.account.login,
-        url: installation.account.html_url,
-        imageUrl: installation.account.avatar_url
-      },
-      results: auditResults
-    });
+  // Create configured gather
+  const gatherers = load('./gather', process.env.GATHER);
+  const gather = createGatherer(gatherers);
+
+  // Create configured auditor
+  const audits = load('./audit', process.env.AUDIT);
+  const auditor = createAuditor(audits);
+
+  // Create configured report renderer
+  const renderers = load('./render', process.env.RENDER);
+  const render = createReportRenderer(renderers);
+
+  const versionControl = await createVersionControl(process.env.VCS);
+  const reportGroups = await versionControl.getReportGroups();
+
+  const writer = createWriter('./.reports');
+  for (const reportGroup of reportGroups) {
+    logger.info(reportGroup, 'Creating report group');
+    
+    logger.info({ reportGroup }, 'Getting repositories for report group');
+    const repositories = await reportGroup.getRepositories();
+    
+    logger.info(`Found ${repositories.length} repositories`);
+    
+    logger.info('Building reports');
+    const report = await reportBuilder(repositories, gather, auditor);
+    
+    logger.info('Rendering reports');
+    await render(reportGroup, report, writer);
   }
-
-  await generateReports(results);
 }
-
-module.exports = worker;

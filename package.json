@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "dotenv": "^6.1.0",
+    "html-minifier": "^3.5.21",
     "jsonwebtoken": "^8.4.0",
     "node-fetch": "^2.2.1",
     "octicons": "^8.5.0",
