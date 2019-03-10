@@ -1,19 +1,22 @@
-const { classify } = require('./maturity-model');
-const { withDocument, withGroup } = require('./render');
-const renderReport = require('./render-report');
+const createIcons = require('./render/icons-svg');
+const createRenderDocument = require('./render/document');
+const createRenderGroup = require('./render/group');
+const renderReport = require('./render/report');
+const createCollect = require('./render/collect');
+const minify = require('html-minifier').minify;
 
-module.exports = exports = function html({ group, audits, results }) {
-
-  // TODO: Apply maturity model to the results
-  // const model = maturityModel.classify(results);
-
-  const render = withDocument(
-    withGroup(
-      renderReport,
-      group
-    ),
-    'title'
-  );
-
-  return render({ audits, results })
+module.exports = exports = function html(group, { audits, results }) {
+  const icons = createIcons();
+  const renderGroup = createRenderGroup(renderReport, group);
+  const collectRenderGroupIcons = createCollect(() => icons.render(), renderGroup);
+  const renderDocument = createRenderDocument(collectRenderGroupIcons, group.name);
+  const minifyOptions = {
+    collapseInlineTagWhitespace: true,
+    collapseWhitespace: true,
+    minifyCSS: true,
+    minifyJS: true,
+    removeAttributeQuotes: true,
+    removeComments: true
+  };
+  return  minify(renderDocument({ audits, results }), minifyOptions);
 }

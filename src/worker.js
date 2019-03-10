@@ -39,7 +39,6 @@ module.exports = exports = async function worker() {
     const report = await reportBuilder(repositories, gather, auditor);
     
     logger.info('Rendering reports');
-
-    await render(reportGroup.name, report, writer);
+    await render(reportGroup, report, writer);
   }
 }
