@@ -1,8 +1,7 @@
-# GitHub Tech Report
-Basic technology reporting for github organisations
+# Repository Report
+Automated maturity model classification for code repositories
 
-Once installed for a github user or organisation, the tools collects and reports
-on the dependencies for each repository.
+![example report](./docs/example-report.png)
 
 ## Installation
 ```
@@ -10,6 +9,10 @@ $ npm install
 ```
 
 ## Usage
+Currently only github is supported. although integration with other version
+control systems like gitLab or BitBucket should be feasible.
+
+### Github Integration
 To communicate with github the service needs to sign requests using the AppID
 and private key that was generated when the application is registered with
 github.
