@@ -8,11 +8,11 @@ const cacheExclude = createCacheExclude([]);
 const getHash = createGetHash([]);
 const cacheFetch = createCacheFetch(cacheDir, getHash, cacheExclude);
 
-const username = process.env.CONFLUENCE_USER;
-const password = process.env.CONFLUENCE_PASSWORD;
-const origin = process.env.CONFLUENCE_ORIGIN;
 
 module.exports = exports = async function getConfluenceLinkedPages(repository) {
+  const username = process.env.CONFLUENCE_USER;
+  const password = process.env.CONFLUENCE_PASSWORD;
+  const origin = process.env.CONFLUENCE_ORIGIN;
   const textQuery = repository.url.replace(/[^a-z0-9]/gi, '?');
   const response = await cacheFetch(`${origin}/rest/api/search?cql=text~"${textQuery}"%20and%20type=page&os_authType=basic`, {
     headers: {
