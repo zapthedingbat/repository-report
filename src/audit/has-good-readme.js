@@ -1,5 +1,5 @@
-const headingPattern = /(^\s*#+\s*.+$|^[^\r\n]+={3,}\s*$)/gm;
-const wordPattern = /\s+/g;
+const headingPattern = /(^#+\s*.+$|^.+[\r\n]+={3,}\s*$)/gm
+const wordPattern = /\S+/gm;
 const minHeadings = 2;
 const minWords = 50;
 
@@ -15,7 +15,8 @@ function getResults(artefacts) {
   let message;
   if (fileContent) {
     const headings = fileContent.match(headingPattern) || [];
-    wordCount = fileContent.replace(headingPattern, "").split(wordPattern).length;
+    const words = fileContent.replace(headingPattern, "").match(wordPattern);
+    const wordCount = words ? words.length : 0;
     pass = (headings.length > minHeadings && wordCount > minWords);
     message = `Readme has ${headings.length} headings and ${wordCount} other words.`;
   } else {
