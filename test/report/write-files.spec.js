@@ -2,7 +2,7 @@ const chai = require("chai");
 const sinon = require("sinon");
 const fs = require("fs");
 const path = require("path");
-const writeFiles = require("../../src/report/write-files");
+const writeFiles = require("../../src/lib/file-writer");
 const expect = chai.expect;
 
 describe("Write Files", function() {

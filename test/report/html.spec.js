@@ -1,7 +1,7 @@
 const sinon = require("sinon");
 const chai = require("chai");
 const snapshot = require("../../test-support/snapshot");
-const html = require("../../src/report/html");
+const html = require("../../src/render/html");
 
 const expect = chai.expect;
 
