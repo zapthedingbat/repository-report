@@ -1,10 +1,10 @@
 const loader = require("./lib/loader");
 const logger = require("./lib/logger");
-const createWriter = require("./lib/file-writer");
-const createVersionControl = require("./version-control");
 const createGatherer = require("./gatherer");
 const createAuditor = require("./auditor");
 const createReportRenderer = require("./report/renderer");
+const createVersionControl = require("./version-control");
+const createWriter = require("./lib/file-writer");
 const reportBuilder = require("./report/builder");
 
 module.exports = exports = async function worker() { 
