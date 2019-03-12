@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const sinon = require("sinon");
 const proxyquire = require("proxyquire");
 
-describe('Audit repository was pushed within a year', function () {
+describe('Audit repository was pushed within 30 days', function () {
   let sandbox;
   let audit;
   let mockCreateAudit;
@@ -12,7 +12,7 @@ describe('Audit repository was pushed within a year', function () {
     sandbox = sinon.createSandbox();
     mockAudit = {};
     mockCreateAudit = sandbox.stub().returns(mockAudit)
-    audit = proxyquire("../../src/audit/pushed-within-a-year", {
+    audit = proxyquire("../../src/audit/pushed-within-30-days", {
       "../../src/lib/create-within-days-audit": mockCreateAudit
     })
   })
@@ -35,15 +35,15 @@ describe('Audit repository was pushed within a year', function () {
     });
 
     it('should set the title', function () {
-      expect(args[0]).to.equal('Code was pushed within a year');
+      expect(args[0]).to.equal('Code was pushed within the last 30 days');
     });
 
     it('should set the description', function () {
       expect(args[1]).to.equal('Repositories should be actively maintained.');
     });
 
-    it('should set number of days to 365', function () {
-      expect(args[2]).to.equal(365);
+    it('should set number of days to 30', function () {
+      expect(args[2]).to.equal(30);
     });
 
     it('should use the repository pushedAt property', function () {
