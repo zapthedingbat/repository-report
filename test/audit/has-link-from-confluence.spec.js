@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const audit = require("../../src/audit/has-link-from-confluence");
 
-describe.only('Audit link from confluence', function () {
+describe('Audit link from confluence', function () {
   
   it('should have a title', async function () {
     expect(audit.details.title).to.equal('Is linked to from confluence');
