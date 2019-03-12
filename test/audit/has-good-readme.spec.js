@@ -1,17 +1,7 @@
 const { expect } = require("chai");
-const sinon = require("sinon");
 const audit = require("../../src/audit/has-good-readme");
 
 describe('Audit repository has a good readme file', function () {
-  let sandbox;
-
-  before(function () {
-    sandbox = sinon.createSandbox();
-  })
-  
-  afterEach(function () {
-    sandbox.restore();
-  })
   
   it('should have a title', async function () {
     expect(audit.details.title).to.equal('Has a helpful readme file');
