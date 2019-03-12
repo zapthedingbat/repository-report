@@ -11,12 +11,8 @@ function message(pass, daysAgo) {
     return `Repository was created yesterday!`
   }
 
-  if (daysAgo < 5) {
-    return `Repository only was created ${daysAgo} days ago. How exciting!`
-  }
-
   if (pass) {
-    return `Repository only was created ${daysAgo} days ago.`
+    return `Repository was only created ${daysAgo} days ago.`
   }
 
   return `Repository was created ${daysAgo} days ago.`
