@@ -1,10 +1,10 @@
 const sinon = require("sinon");
 const proxyquire = require("proxyquire");
 
-describe.only("Worker", function() {
+describe("Worker", function() {
   let sandbox;
   let gatherers;
-  let audits;
+  let audits; 
   let renderers;
   let load;
   let loader;
