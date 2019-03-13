@@ -15,10 +15,6 @@ module.exports = exports = function create(cachePath, getHash, cachePredicate) {
 
   return async function cachedFetch(input, init) {
     const url = typeof input === "string" ? input : input.url;
-    if (!url.startsWith('https://')) {
-      const x = new Error();
-      throw x.stack;
-    }
     const hash = getHash(input, init);
     const cacheFile = joinPath(cachePath, hash);
 
