@@ -9,7 +9,7 @@ module.exports = exports = function renderReport({ audits, results }) {
   results.forEach(result => result.classification = classify(classifications, result.results));
   
   return `
-  ${renderMaturitySummary(results)}
+  ${renderMaturitySummary(classifications, results)}
   ${renderResults(audits, results)}
   `;
 }

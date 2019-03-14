@@ -1,4 +1,4 @@
-module.exports = exports = function renderMaturitySummary(results) {
+module.exports = exports = function renderMaturitySummary(classifications, results) {
   const totalCount = results.length;
   const classificationCounts = classifications.map(classification => {
     let count = results.filter(result => result.classification.matched.name === classification.details.name).length;

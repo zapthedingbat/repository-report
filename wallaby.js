@@ -3,6 +3,7 @@ module.exports = function(wallaby) {
     files: [
       { pattern: ".keys/**/*" },
       { pattern: "src/**/*.js" },
+      { pattern: "src/**/*.css", binary: true },
       { pattern: "test/**/*.snapshot", binary: true },
       { pattern: "test-support/**/*.js", instrument: false },
     ],

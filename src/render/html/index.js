@@ -18,5 +18,6 @@ module.exports = exports = function html(group, { audits, results }) {
     removeAttributeQuotes: true,
     removeComments: true
   };
-  return  minify(renderDocument({ audits, results }), minifyOptions);
+  
+  return minify(renderDocument({ audits, results }), minifyOptions);
 }
