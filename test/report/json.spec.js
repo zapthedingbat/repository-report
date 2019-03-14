@@ -1,33 +1,48 @@
-const sinon = require("sinon");
-const chai = require("chai");
 const snapshot = require("../../test-support/snapshot");
-const json = require("../../src/render/json");
+const json = require("../../src/render/json")
 
-const expect = chai.expect;
+describe("Render JSON report", function() {
 
-describe("Report JSON", function() {
-  let sandbox;
-
-  before(function() {
-    sandbox = sinon.createSandbox();
-  });
-
-  afterEach(function() {
-    sandbox.restore();
-  });
-
-  it("should render a report to the given writer", async function() {
-    const write = sandbox.stub();
-    const createWrite = sandbox.stub().returns(write);
-    const generate = json(createWrite, "test app id", "test owner");
-    await generate([
-      {
-        document: { title: 'test title' },
-        installation: {},
-        results: []
+  it("should match the report snapshot", function () {
+    const group = {
+      name: 'test group name'
+    };
+    const audits = {
+      "test-failing-audit": { details: 'cake' },
+      "test-passing-audit": { details: 'cake' }
+    };
+    const results = [{
+      artefacts: {
+        "repository": {
+          title: "test repository title",
+          createdAt: new Date('1900-01-01'),
+          pushedAt: new Date('1900-01-01'),
+        },
+        "contributors": [{
+          "title": "test contributor title",
+          "url": "test contributor url"
+        }],
+        "confluence-linked-pages": [{
+          "title": "test confluence-linked-page title",
+          "url": "test confluence-linked-page url"
+        }]
+      },
+      results: {
+        "test-passing-audit": {
+          "pass": true,
+          "score": 1,
+          "message": "test-message-1"
+        },
+        "test-failing-audit": {
+          "pass": false,
+          "score": 0.5,
+          "message": "test-message-2"
+        }
       }
-    ]);
+    }];
 
-    snapshot("./test/report/json.snapshot", write.lastCall.args[0]);
+    const actual = json(group, {audits, results});
+    
+    snapshot("./test/report/json.snapshot", actual);
   });
 });
