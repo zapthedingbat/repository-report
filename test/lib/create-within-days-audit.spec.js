@@ -10,7 +10,8 @@ describe('Create within days audit', function () {
       const artefacts = {};
       const artefactsDateFn = sinon.stub().returns(artefactsDate);
       const messageFn = sinon.stub().returns('test message');
-      const audit = createWithinDaysAudit('test title', 'test description', 10, artefactsDateFn, messageFn);
+      const refDate = new Date();
+      const audit = createWithinDaysAudit('test title', 'test description', 10, artefactsDateFn, messageFn, refDate);
 
       const result = audit.getResults(artefacts);
 
@@ -29,7 +30,8 @@ describe('Create within days audit', function () {
       const artefacts = {};
       const artefactsDateFn = sinon.stub().returns(artefactsDate);
       const messageFn = sinon.stub().returns('test message');
-      const audit = createWithinDaysAudit('test title', 'test description', 10, artefactsDateFn, messageFn);
+      const refDate = new Date();
+      const audit = createWithinDaysAudit('test title', 'test description', 10, artefactsDateFn, messageFn, refDate);
 
       const result = audit.getResults(artefacts);
 

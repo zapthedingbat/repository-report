@@ -1,11 +1,9 @@
-const chai = require("chai");
 const sinon = require("sinon");
 const fs = require("fs");
 const path = require("path");
-const writeFiles = require("../../src/lib/file-writer");
-const expect = chai.expect;
+const createWriter = require("../../src/lib/file-writer");
 
-describe("Write Files", function() {
+describe("File writer", function() {
   let sandbox;
 
   before(function() {
@@ -17,20 +15,18 @@ describe("Write Files", function() {
   });
 
   describe("Create Writer", function() {
-    describe("Writer", function() {
-      it("should return a function that writes to a file in the specified directory", async function() {
+    describe("Writer", function () {
+      it("should return a function that writes to a file in the specified directory", async function () {
         const mockStream = {
           write: sandbox.stub().yields()
         };
         sandbox.stub(fs, "createWriteStream").returns(mockStream);
         sandbox.stub(path, "join").returns("mock path");
-        const createWriter = writeFiles("test dir");
-        const writer = createWriter("test name");
+        const writer = createWriter("test directory");
 
-        await writer("test data");
+        await writer("test report name", "test data", "test renderer name");
 
-        expect(createWriter).to.be.a("function");
-        expect(writer).to.be.a("function");
+        sinon.assert.calledWith(path.join, "test directory", "test report name.test renderer name");
         sinon.assert.calledWith(fs.createWriteStream, "mock path");
         sinon.assert.calledWith(mockStream.write, "test data");
       });

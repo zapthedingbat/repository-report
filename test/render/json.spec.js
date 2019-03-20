@@ -43,6 +43,6 @@ describe("Render JSON report", function() {
 
     const actual = json(group, {audits, results});
     
-    snapshot("./test/report/json.snapshot", actual);
+    snapshot("./test/render/json.snapshot", actual);
   });
 });

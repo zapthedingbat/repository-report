@@ -3,6 +3,7 @@ module.exports = exports = async function builder(repositories, gather, auditor)
   for (let repository of repositories) {
     const artefacts = await gather(repository);
     const auditResults = auditor.getAuditResults(artefacts);
+
     repositoriesResults.push({
       artefacts,
       results: auditResults

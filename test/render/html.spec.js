@@ -86,8 +86,9 @@ describe("Render HTML report", function() {
       }
     }];
 
-    const actual = html(group, {audits, results});
+    const refDate = new Date(2019-03-20);
+    const actual = html(group, {audits, results}, refDate);
     
-    snapshot("./test/report/html.snapshot", actual);
+    snapshot("./test/render/html.snapshot", actual);
   });
 });

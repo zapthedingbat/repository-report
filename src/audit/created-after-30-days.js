@@ -23,5 +23,6 @@ module.exports = exports = afterDays(
   `Projects often take time to reach maturity. The ongoing stewardship of a project can be as difficult then it's creation. Try to stay focused on reaching a clear and realistic milestone early.`,
   days,
   artefacts => artefacts.repository.createdAt,
-  message
+  message,
+  new Date()
 );
