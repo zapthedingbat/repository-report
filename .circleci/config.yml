@@ -1,0 +1,33 @@
+version: 2
+jobs:
+  build:
+    machine: true
+    steps:
+      - checkout
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run: docker build -t zapthedingbat/repository-report:$CIRCLE_SHA1 .
+      - run: docker tag zapthedingbat/repository-report:$CIRCLE_SHA1 zapthedingbat/repository-report:latest
+      - run: docker push zapthedingbat/repository-report
+  generate-report:
+    machine: true
+    steps:
+      - run: docker run zapthedingbat/repository-report
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - /.*/
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 9 * * *"
+          filters:
+            branches:
+              only:
+                - /.*/
+    jobs:
+      - generate-report
