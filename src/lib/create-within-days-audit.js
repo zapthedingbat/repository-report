@@ -1,8 +1,8 @@
-function createGetResults(days, artefactsDateFn, messageFn) {
+function createGetResults(days, artefactsDateFn, messageFn, refDate) {
   return function getResults(artefacts) {
     const atDate = artefactsDateFn(artefacts);
     const msDay = 1000 * 60 * 60 * 24;
-    const daysAgo = Math.floor((Date.now() - atDate.getTime()) / msDay);
+    const daysAgo = Math.floor((refDate.getTime() - atDate.getTime()) / msDay);
     const pass = daysAgo < days;
 
     return {
@@ -13,13 +13,13 @@ function createGetResults(days, artefactsDateFn, messageFn) {
   }
 }
 
-module.exports = exports = function withingDays(title, description, days, artefactsDateFn, messageFn) {
+module.exports = exports = function createWithinDaysAudit(title, description, days, artefactsDateFn, messageFn, refDate) {
   const details = {
     title,
     description
   }
   return {
     details,
-    getResults: createGetResults(days, artefactsDateFn, messageFn)
+    getResults: createGetResults(days, artefactsDateFn, messageFn, refDate)
   }
 }

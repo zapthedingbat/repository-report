@@ -1,11 +1,11 @@
-const { renderAll, renderJson } = require('./util');
+const { renderAll } = require('./util');
 const renderAuditResults = require('./audit-results');
 const renderSideBar = require('./side-bar');
 const renderRepositorySettingsButton = require('./repository-settings-button');
 const renderRepositoryDescription = require('./repository-description');
 const renderMaturity = require('./maturity');
 
-function renderResult(audits, result, index) {
+function renderResult(audits, result, refDate, index) {
   const artefacts = result.artefacts;
   const repository = artefacts.repository;
   const classification = result.classification;
@@ -26,7 +26,7 @@ function renderResult(audits, result, index) {
   <div class="row my-4">
 
     <div class="col-sm-4">
-      ${renderSideBar(result)}
+      ${renderSideBar(result, refDate)}
     </div>
 
     <div class="col-sm-8">
@@ -74,9 +74,9 @@ function renderResult(audits, result, index) {
 `;
 }
 
-module.exports = exports = function renderResults(audits, results) {
+module.exports = exports = function renderResults(audits, results, refDate) {
   return `
 <div class="list-group list-group-flush">
-  ${renderAll((result, index) => renderResult(audits, result, index), results)}
+  ${renderAll((result, index) => renderResult(audits, result, refDate, index), results)}
 </div>`
 }

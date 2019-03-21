@@ -1,7 +1,7 @@
 const chai = require("chai");
-const hasRepoDescription = require("../../src/audit/has-repo-description");
+const hasRepoDescription = require("../../src/audit/has-description");
 
-describe('Audit has repo description', function () {
+describe('Audit repository has description', function () {
   describe('description is set', function () {
     it('should return a successful result', async function () {
       const mockArtefacts = {
@@ -25,7 +25,7 @@ describe('Audit has repo description', function () {
       chai.expect(results).to.eql({
         pass: false,
         score: 0,
-        message: 'Set a repository description'
+        message: 'No description was set'
       });
     });
   });

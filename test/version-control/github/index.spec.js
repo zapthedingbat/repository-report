@@ -1,190 +1,183 @@
-const chai = require("chai");
+const { expect } = require("chai");
 const sinon = require("sinon");
 const proxyquire = require("proxyquire");
-const expect = chai.expect;
 
-describe("GitHub", function() {
+describe("GitHub", function () {
   let sandbox;
-  let fetch;
-  let github;
-  let jsonwebtoken;
+  let createGithub;
+  let appToken;
+  let getAppToken;
+  let createApi;
+  let api;
 
-  before(function() {
+  before(function () {
     sandbox = sinon.createSandbox();
-  });
-
-  beforeEach(function() {
-    childProcess = { spawn: sandbox.stub() };
-    fetch = sandbox.stub().returns({
-      json: sandbox.stub().resolves()
-    });
-    const createCacheFetch = () => fetch;
-    jsonwebtoken = {
-      sign: sandbox.stub()
+    api = {
+      getInstallations: sandbox.stub(),
+      request: sandbox.stub(),
+      getPaginated: sandbox.stub(),
+      getFilePaths: sandbox.stub(),
+      readFile: sandbox.stub()
     };
-    github = proxyquire("../../../src/version-control/github/main", {
-      "./../../lib/cache-fetch": createCacheFetch,
-      "./../../lib/logger": {},
-      jsonwebtoken: jsonwebtoken
+    createApi = sandbox.stub().returns(api);
+    appToken = 'test app token';
+    getAppToken = sandbox.stub().resolves(appToken),
+      createGithub = proxyquire('../../../src/version-control/github', {
+        "../../../src/version-control/github/get-app-token": getAppToken,
+        "../../../src/version-control/github/api": createApi
+      })
+  })
+
+  describe("Creating", function () {
+    it('should get the app token', async function () {
+      await createGithub();
+  
+      sinon.assert.called(getAppToken);
     });
-  });
 
-  afterEach(function() {
-    sandbox.restore();
-  });
+    describe("Get report groups", function () {
+      let installations;
+      let github;
 
-  describe("Get", function() {
-    it("should get the given url with the authorization headers", async function() {
-      await github.get("test token", "test url");
+      before(async function () {
+        installations = [{
+          account: {
+            login: 'test login',
+            avatar_url: 'test avatar url',
+            description: 'test description'
+          },
+          access_tokens_url: 'test access tokens url',
+          repositories_url: 'test repositories url'
+        }];
+        api.getInstallations.resolves(installations);
 
-      sinon.assert.calledWithExactly(fetch, "test url", {
-        method: "GET",
-        headers: {
-          Accept: "application/vnd.github.machine-man-preview+json",
-          Authorization: "Bearer test token"
-        }
-      });
-    });
-  });
+        github = await createGithub();
+      })
 
-  describe("Get Installations", function() {
-    it("should get the installations url with the authorization headers", async function() {
-      github.getInstallations("test token");
+      it('should get the report group from the api', async function () {
+        const reportGroups = await github.getReportGroups();
 
-      sinon.assert.calledWithExactly(
-        fetch,
-        "https://api.github.com/app/installations",
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/vnd.github.machine-man-preview+json",
-            Authorization: "Bearer test token"
-          }
-        }
-      );
-    });
-  });
-
-  describe("Get Paginated", function() {
-    it("should get paginated results with the authorization headers", async function() {
-      const mockGetItems = sandbox.stub().returns(["test item"]);
-      const mockHeaders = {
-        get: sinon
-          .stub()
-          .onCall(0)
-          .returns('<page two>; rel="next"')
-          .onCall(1)
-          .returns("test link header") // no more pages
-      };
-      fetch.returns({
-        headers: mockHeaders,
-        json: sinon.stub().resolves()
+        sinon.assert.calledWith(api.getInstallations, appToken);
+        expect(reportGroups[0].name).to.equal('test login');
+        expect(reportGroups[0].imageUrl).to.equal('test avatar url');
+        expect(reportGroups[0].description).to.equal('test description');
       });
 
-      await github.getPaginated("test token", "test url", mockGetItems);
-
-      sinon.assert.calledWithExactly(mockHeaders.get, "link");
-      sinon.assert.calledWithExactly(fetch, "test url", {
-        method: "GET",
-        headers: {
-          Accept: "application/vnd.github.machine-man-preview+json",
-          Authorization: "Bearer test token"
-        }
-      });
-      sinon.assert.calledWithExactly(fetch, "page two", {
-        method: "GET",
-        headers: {
-          Accept: "application/vnd.github.machine-man-preview+json",
-          Authorization: "Bearer test token"
-        }
-      });
-    });
-  });
-
-  describe("Get Tree Files", function() {
-    it("should get the tree files", async function() {
-      fetch.returns({
-        json: sinon.stub().resolves({})
-      });
-
-      await github.getTreeFiles(
-        "test token",
-        "test owner",
-        "test repo",
-        "test branch"
-      );
-
-      sinon.assert.calledWithExactly(
-        fetch,
-        "https://api.github.com/repos/test owner/test repo/git/trees/test branch?recursive=1",
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/vnd.github.machine-man-preview+json",
-            Authorization: "Bearer test token"
-          }
-        }
-      );
-    });
-  });
-
-  describe("Get File Contents", function() {
-    beforeEach(function() {
-      fetch.returns({
-        json: sinon.stub().resolves({
-          content: "dGVzdA=="
+      describe("Report group", function () {
+        let reportGroup;
+        
+        before(async function () {
+          const reportGroups = await github.getReportGroups();
+          reportGroup = reportGroups[0];
         })
-      });
-    });
 
-    it("should get the file contents", async function() {
-      const actual = await github.readFile(
-        "test token",
-        "test owner",
-        "test repo",
-        "test branch",
-        "test/path"
-      );
-
-      expect(actual).to.equal("test");
-      sinon.assert.calledWithExactly(
-        fetch,
-        "https://api.github.com/repos/test owner/test repo/contents/test%2Fpath?ref=test branch",
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/vnd.github.machine-man-preview+json",
-            Authorization: "Bearer test token"
+        it('should get repositories from the api', async function () {
+          const mockJson = { token: 'test token' };
+          const mockResponse = {
+            json: sandbox.stub().resolves(mockJson)
           }
-        }
-      );
-    });
-  });
+          api.request.resolves(mockResponse);
+          api.getPaginated.resolves([{
+            name: 'test name',
+            description: 'test description',
+            html_url: 'test html url',
+            created_at: '2000-01-02',
+            pushed_at: '2000-03-04',
+            default_branch: 'test default branch',
+            contributors_url: 'test contributors url',
+            owner: {
+              login: 'test login',
+            }
+          }]);
+          
+          const repositories = await reportGroup.getRepositories();
+  
+          const firstRepository = repositories[0];
+          expect(firstRepository).to.include({
+            description: "test description",
+            settingsUrl: "test html url/settings",
+            title: "test name",
+            url: "test html url",
+          });
+          expect(firstRepository).to.have.property('createdAt').that.eql(new Date('2000-01-02'));
+          expect(firstRepository).to.have.property('pushedAt').that.eql(new Date('2000-03-04'));
+          expect(firstRepository).to.have.property('getFilePaths').that.is.a('function');
+          expect(firstRepository).to.have.property('getContributors').that.is.a('function');
+          expect(firstRepository).to.have.property('readFile').that.is.a('function');
+        });
 
-  describe("Get App Token", function() {
-    it("should create a JWT with the given key and appId", async function() {
-      await github.getAppToken("test key", "test app id");
+        describe("Repository", function () {
+          let repository;
 
-      sinon.assert.calledWithExactly(
-        jsonwebtoken.sign,
-        { iss: "test app id" },
-        "test key",
-        { algorithm: "RS256", expiresIn: "5m" }
-      );
-    });
-  });
+          before(async function () {
+            const mockJson = { token: 'test token' };
+            const mockResponse = {
+              json: sandbox.stub().resolves(mockJson)
+            }
+            api.request.resolves(mockResponse);
+            api.getPaginated.resolves([{
+              name: 'test name',
+              description: 'test description',
+              html_url: 'test html url',
+              created_at: '2000-01-02',
+              pushed_at: '2000-03-04',
+              default_branch: 'test default branch',
+              contributors_url: 'test contributors url',
+              owner: {
+                login: 'test login',
+              }
+            }]);
+            const repositories = await reportGroup.getRepositories();
+            repository = repositories[0];
+          });
 
-  describe("Post", function() {
-    it("should post the given url with the authorization headers", async function() {
-      github.post("test token", "test url");
+          describe('get file paths', function () {
+            it('should get file paths from API', async function () {
+              const testFilePaths = [];
+              api.getFilePaths.resolves(testFilePaths);
 
-      sinon.assert.calledWithExactly(fetch, "test url", {
-        method: "POST",
-        headers: {
-          Accept: "application/vnd.github.machine-man-preview+json",
-          Authorization: "Bearer test token"
-        }
+              const filePaths = await repository.getFilePaths();
+
+              expect(filePaths).to.equal(testFilePaths);
+              sinon.assert.calledWithExactly(api.getFilePaths, 'test token', 'test login', 'test name', 'test default branch');
+            });
+          });
+
+          describe('get contributors', function () {
+            it('should contributors with API', async function () {
+              const testContributors = [{
+                login: 'test login',
+                html_url: 'test html url',
+                avatar_url: 'test avatar_url',
+                contributions: 'test contributions'
+              }];
+              api.getPaginated.resolves(testContributors);
+
+              const filePaths = await repository.getContributors();
+
+              expect(filePaths).to.eql([{
+                name: 'test login',
+                url: 'test html url',
+                imageUrl: 'test avatar_url',
+                contributions: 'test contributions',
+              }]);
+              sinon.assert.calledWithExactly(api.getPaginated, 'test token', 'GET', 'test contributors url', sinon.match.func);
+            });
+          });
+
+          describe('read file', function () {
+            it('should read file with API', async function () {
+              const testFile = ''
+              api.readFile.resolves(testFile);
+
+              const file = await repository.readFile('test path');
+
+              expect(file).to.equal(testFile);
+              sinon.assert.calledWithExactly(api.readFile, 'test token', 'test login', 'test name', 'test default branch', 'test path');
+            });
+          });
+        });
       });
-    });
-  });
-});
+    })
+  })
+})  

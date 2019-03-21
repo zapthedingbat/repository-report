@@ -1,4 +1,4 @@
-const chai = require("chai");
+const { expect } = require("chai");
 const sinon = require("sinon");
 const createAuditor = require("../src/auditor");
 
@@ -16,9 +16,9 @@ describe('auditor', function () {
 
     const auditor = createAuditor(mockAudits);
 
-    const actual = await auditor.getAuditResults(mockArtefacts);
+    const actual = auditor.getAuditResults(mockArtefacts);
 
-    chai.expect(actual).to.eql({
+    expect(actual).to.eql({
       test: 'test result'
     });
   });
@@ -28,6 +28,8 @@ describe('auditor', function () {
       test: { details: 'test details' }
     });
 
-    chai.expect(auditor.details).to.eql(['test details']);
+    expect(auditor.details).to.eql({
+      test: 'test details'
+    });
   })
 })

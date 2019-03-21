@@ -14,12 +14,13 @@ module.exports = exports = function classify(classifications, auditResults) {
 
   // Get the first classificationCriteriaAuditResults where all the criteria are
   // met.
+
   const matchedClassificationCriteriaAuditResults = classificationCriteriaAuditResults.find(classificationCriteriaAuditResult => {
     return Object.values(classificationCriteriaAuditResult.auditResults).every(auditResult => auditResult.pass);
   });
 
   return {
-    matched: matchedClassificationCriteriaAuditResults.details,
+    matched: matchedClassificationCriteriaAuditResults ? matchedClassificationCriteriaAuditResults.details : null,
     classifications: classificationCriteriaAuditResults
   }
 }

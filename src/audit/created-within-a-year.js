@@ -8,4 +8,5 @@ module.exports = exports = withinDays(
   days,
   artefacts => artefacts.repository.createdAt,
   (_, daysAgo) => `Repository was created ${daysAgo} days ago.`,
+  new Date()
 );

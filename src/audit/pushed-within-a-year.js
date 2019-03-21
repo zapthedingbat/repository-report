@@ -7,5 +7,6 @@ module.exports = exports = withinDays(
   `Repositories should be actively maintained.`,
   days,
   artefacts => artefacts.repository.pushedAt,
-  (_, daysAgo) => `Repository was pushed to ${daysAgo} days ago.`
+  (_, daysAgo) => `Repository was pushed to ${daysAgo} days ago.`,
+  new Date()
 );
