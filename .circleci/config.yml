@@ -1,0 +1,27 @@
+version: 2
+jobs:
+  build:
+    machine: true
+    steps:
+      - checkout
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run: docker build -t zapthedingbat/repository-report:$CIRCLE_BRANCH .
+      - run: docker push zapthedingbat/repository-report:$CIRCLE_BRANCH
+  generate-report:
+    machine: true
+    steps:
+      - run: docker run zapthedingbat/repository-report
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
+          filters:
+            branches:
+              only: master
+  daily:
+    triggers:
+      - schedule:
+          cron: "0 9 * * *"
+    jobs:
+      - generate-report
