@@ -18,7 +18,8 @@ workflows:
       - build:
           filters:
             branches:
-              only: master
+              only:
+                - /.*/
   nightly:
     triggers:
       - schedule:
@@ -26,6 +27,6 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - /.*/
     jobs:
       - generate-report
