@@ -5,7 +5,7 @@ jobs:
     steps:
       - checkout
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
-      - run: docker build -t zapthedingbat/repository-report:$CIRCLE_BRANCH .
+      - run: docker build -t zapthedingbat/repository-report:$CIRCLE_BRANCH -t zapthedingbat/repository-report:latest .
       - run: docker push zapthedingbat/repository-report:$CIRCLE_BRANCH
   generate-report:
     machine: true
