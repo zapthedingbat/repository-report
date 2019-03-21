@@ -19,7 +19,7 @@ workflows:
           filters:
             branches:
               only: master
-  daily:
+  nightly:
     triggers:
       - schedule:
           cron: "0 9 * * *"
