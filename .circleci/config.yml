@@ -11,7 +11,18 @@ jobs:
   generate-report:
     machine: true
     steps:
-      - run: docker run zapthedingbat/repository-report
+      - run:
+          - mkdir $(pwd)/.keys
+          - echo $GITHUB_PRIVATE_KEY > $(pwd)/.keys/github-private-key.pem
+      - run: >
+          docker 
+          --rm 
+          -v $(pwd)/.keys:/home/app/.keys
+          -e VCS=github 
+          -e GATHER=* 
+          -e AUDIT=* 
+          -e RENDER=html 
+          run zapthedingbat/repository-report
 workflows:
   version: 2
   build:
@@ -21,6 +32,9 @@ workflows:
             branches:
               only:
                 - /.*/
+      - generate-report:
+          requires:
+            - build
   nightly:
     triggers:
       - schedule:
