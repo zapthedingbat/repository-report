@@ -1,16 +1,16 @@
 version: 2
 jobs:
   build:
-    machine: true
+    docker:
+      - image: docker:stable-git
     steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
       - checkout
       - run:
           name: docker build
           command: docker build -t zapthedingbat/repository-report:$CIRCLE_SHA1 .
   deploy:
-    machine: true
+    docker:
+      - image: docker:stable-git
     steps:
       - run:
           name: Publish to docker hub
@@ -19,7 +19,8 @@ jobs:
             docker tag zapthedingbat/repository-report:$CIRCLE_SHA1 zapthedingbat/repository-report:latest
             docker push zapthedingbat/repository-report
   generate-report:
-    machine: true
+    docker:
+      - image: docker:stable-git
     steps:
       - run:
           name: Configure environment
