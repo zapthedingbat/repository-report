@@ -4,6 +4,7 @@ const createCacheExclude = require("../../lib/cache-exclude");
 const createGetHash = require('../../lib/get-hash');
 const getAppToken = require('./get-app-token');
 const createApi = require("./api");
+const logger = require("../../lib/logger");
 
 const cacheDir = path.join(__dirname, "../../../.cache");
 const cacheExclude = createCacheExclude([/\/access_tokens$/]);
@@ -74,7 +75,18 @@ function createReportGroup(appToken, installation) {
 function createGetReportGroups(appToken) {
   return async function getReportGroups() {
     const installations = await api.getInstallations(appToken);
-    return installations.map(installation => createReportGroup(appToken, installation));
+
+    const list = process.env.GITHUB_INSTALLATIONS || '';
+    const installationNames = list.split(',').filter(name => name !== '');
+
+    logger.debug({
+      list,
+      installationNames
+    });
+
+    return installations
+      .filter(installation => installationNames.includes(installation.account.login))
+      .map(installation => createReportGroup(appToken, installation));
   }
 }
 
