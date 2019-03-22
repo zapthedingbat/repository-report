@@ -11,9 +11,8 @@ jobs:
   generate-report:
     machine: true
     steps:
-      - run:
-          - mkdir $(pwd)/.keys
-          - echo $GITHUB_PRIVATE_KEY > $(pwd)/.keys/github-private-key.pem
+      - run: mkdir $(pwd)/.keys
+      - run: echo $GITHUB_PRIVATE_KEY > $(pwd)/.keys/github-private-key.pem
       - run: >
           docker 
           --rm 
