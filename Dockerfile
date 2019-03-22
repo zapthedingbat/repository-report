@@ -13,6 +13,8 @@ RUN npm run test
 
 # Production
 FROM node:10-alpine as production
+RUN addgroup -S app && adduser -S -G app app
+USER app
 WORKDIR /var/src/app
 ARG NPM_TOKEN
 ENV NODE_ENV 'production'
