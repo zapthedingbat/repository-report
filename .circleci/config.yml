@@ -13,15 +13,12 @@ jobs:
     steps:
       - run: mkdir $(pwd)/.keys
       - run: echo $GITHUB_PRIVATE_KEY | base64 --decode > $(pwd)/.keys/github-private-key.pem
+      - run: export -p > $(pwd)/.env
       - run: >
-          docker run 
-          --rm 
+          docker run
+          --rm
+          --env-file=.env
           -v $(pwd)/.keys:/home/app/.keys
-          -e LOG_LEVEL=trace 
-          -e VCS=github 
-          -e GATHER=* 
-          -e AUDIT=* 
-          -e RENDER=html 
           zapthedingbat/repository-report
 workflows:
   version: 2
