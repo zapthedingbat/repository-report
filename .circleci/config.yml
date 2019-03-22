@@ -17,6 +17,7 @@ jobs:
           docker run 
           --rm 
           -v $(pwd)/.keys:/home/app/.keys
+          -e LOG_LEVEL=trace 
           -e VCS=github 
           -e GATHER=* 
           -e AUDIT=* 
