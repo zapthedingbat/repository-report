@@ -1,9 +1,9 @@
 # Build and test
 FROM node:10-alpine as build
 RUN apk add git
-WORKDIR /var/src/app
 RUN addgroup -S app && adduser -S -G app app
 USER app
+WORKDIR /var/src/app
 COPY package.json package-lock.json ./
 RUN npm set progress=false && \
     npm config set depth 0 && \
