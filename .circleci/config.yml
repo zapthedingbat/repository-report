@@ -29,15 +29,10 @@ workflows:
   version: 2
   build:
     jobs:
-      - generate-report
-      # - build:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - /.*/
-      # - generate-report:
-      #     requires:
-      #       - build
+      - build
+      - generate-report:
+          requires:
+            - build
   nightly:
     triggers:
       - schedule:
@@ -45,6 +40,6 @@ workflows:
           filters:
             branches:
               only:
-                - /.*/
+                - master
     jobs:
       - generate-report
