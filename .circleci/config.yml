@@ -3,26 +3,41 @@ jobs:
   build:
     machine: true
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - checkout
-      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
-      - run: docker build -t zapthedingbat/repository-report:$CIRCLE_SHA1 .
-      - run: docker tag zapthedingbat/repository-report:$CIRCLE_SHA1 zapthedingbat/repository-report:latest
-      - run: docker push zapthedingbat/repository-report
+      - run:
+          name: docker build
+          command: docker build -t zapthedingbat/repository-report:$CIRCLE_SHA1 .
+  deploy:
+    machine: true
+    steps:
+      - run:
+          name: Publish to docker hub
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker tag zapthedingbat/repository-report:$CIRCLE_SHA1 zapthedingbat/repository-report:latest
+            docker push zapthedingbat/repository-report
   generate-report:
     machine: true
     steps:
-      - run: mkdir $(pwd)/.keys
-      - run: echo $GITHUB_PRIVATE_KEY | base64 --decode > $(pwd)/.keys/github-private-key.pem
-      - run: env > $(pwd)/.env
-      - run: mkdir /tmp/.reports
-      - run: chmod -R 777 /tmp/.reports
-      - run: >
-          docker run
-          --rm
-          --env-file=.env
-          -v $(pwd)/.keys:/home/app/.keys
-          -v /tmp/.reports:/home/app/.reports
-          zapthedingbat/repository-report
+      - run:
+          name: Configure environment
+          command: |
+            mkdir $(pwd)/.keys
+            echo $GITHUB_PRIVATE_KEY | base64 --decode > $(pwd)/.keys/github-private-key.pem
+            env > $(pwd)/.env
+            mkdir /tmp/.reports
+            chmod -R 777 /tmp/.reports
+      - run:
+          name: Generate report
+          command: >
+            docker run
+            --rm
+            --env-file=.env
+            -v $(pwd)/.keys:/home/app/.keys
+            -v /tmp/.reports:/home/app/.reports
+            zapthedingbat/repository-report
       - store_artifacts:
           path: /tmp/.reports
 workflows:
@@ -34,9 +49,12 @@ workflows:
             branches:
               only:
                 - master
-      - generate-report:
+      - deploy:
           requires:
             - build
+      - generate-report:
+          requires:
+            - deploy
   nightly:
     triggers:
       - schedule:
