@@ -21,7 +21,7 @@ jobs:
           -e GATHER=* 
           -e AUDIT=* 
           -e RENDER=html 
-          run zapthedingbat/repository-report
+          zapthedingbat/repository-report
 workflows:
   version: 2
   build:
