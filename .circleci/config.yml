@@ -36,8 +36,8 @@ jobs:
           command: |
             mkdir $(pwd)/.keys
             echo $GITHUB_PRIVATE_KEY | base64 --decode > $(pwd)/.keys/github-private-key.pem
-            docker create -v /var/src/app/.keys --name keys alpine /bin/true
-            docker cp $(pwd)/.keys/github-private-key.pem keys:/var/src/app/.keys
+            docker create -v /home/node/app/.keys --name keys alpine /bin/true
+            docker cp $(pwd)/.keys/github-private-key.pem keys:/home/node/app/.keys
       - run:
           name: Generate report
           command: >
@@ -49,7 +49,7 @@ jobs:
       - run:
           name: Copy artifacts
           command: |
-            docker cp app:/var/src/app/.reports /tmp/.reports
+            docker cp app:/home/node/app/.reports /tmp/.reports
       - store_artifacts:
           path: /tmp/.reports
 workflows:
