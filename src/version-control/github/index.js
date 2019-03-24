@@ -74,18 +74,14 @@ function createReportGroup(appToken, installation) {
 
 function createGetReportGroups(appToken) {
   return async function getReportGroups() {
-    const installations = await api.getInstallations(appToken);
-
-    const list = process.env.GITHUB_INSTALLATIONS || '';
-    const installationNames = list.split(',').filter(name => name !== '');
-
-    logger.debug({
-      list,
-      installationNames
-    });
+    let installations = await api.getInstallations(appToken);
+    const list = process.env.GITHUB_INSTALLATIONS || '*';
+    if (list !== '*') {
+      const installationNames = list.split(',').filter(name => name !== '');
+      installations = installations.filter(installation => installationNames.includes(installation.account.login))
+    }
 
     return installations
-      .filter(installation => installationNames.includes(installation.account.login))
       .map(installation => createReportGroup(appToken, installation));
   }
 }
