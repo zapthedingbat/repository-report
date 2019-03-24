@@ -8,20 +8,26 @@ jobs:
           docker_layer_caching: true
       - checkout
       - run:
-          name: docker build
-          command: docker build -t zapthedingbat/repository-report:$CIRCLE_SHA1 .
-  deploy:
-    docker:
-      - image: docker:stable-git
-    steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
+          name: Build docker image
+          command: docker build --rm=false -t zapthedingbat/repository-report:$CIRCLE_SHA1 .
       - run:
-          name: Publish to docker hub
+          name: Copy output artifacts
           command: |
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker tag zapthedingbat/repository-report:$CIRCLE_SHA1 zapthedingbat/repository-report:latest
-            docker push zapthedingbat/repository-report
+            BUILDER_CONTAINER=$(docker ps -a -q -l -f "label=image=builder")
+            docker cp $BUILDER_CONTAINER:/home/node/app/.output /tmp/.output
+      - store_test_results:
+          path: /tmp/.output/test-results
+      - store_artifacts:
+          path: /tmp/.output/coverage
+          destination: coverage
+      - deploy:
+          name: Publish image (on master branch)
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+              docker tag zapthedingbat/repository-report:$CIRCLE_SHA1 zapthedingbat/repository-report:latest
+              docker push zapthedingbat/repository-report
+            fi
   generate-report:
     docker:
       - image: docker:stable-git
@@ -47,26 +53,23 @@ jobs:
             --volumes-from keys
             zapthedingbat/repository-report
       - run:
-          name: Copy artifacts
-          command: |
-            docker cp app:/home/node/app/.reports /tmp/.reports
+          name: Copy output artifacts
+          command: docker cp app:/home/node/app/.output /tmp/.output
       - store_artifacts:
-          path: /tmp/.reports
+          path: /tmp/.output/reports
+          destination: reports
 workflows:
   version: 2
   build:
     jobs:
       - build
-      - deploy:
+      - generate-report:
+          requires:
+            - build
           filters:
             branches:
               only:
                 - master
-          requires:
-            - build
-      - generate-report:
-          requires:
-            - deploy
   nightly:
     triggers:
       - schedule:

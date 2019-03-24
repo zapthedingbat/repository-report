@@ -26,7 +26,7 @@ module.exports = exports = async function worker() {
   const versionControl = await createVersionControl(process.env.VCS);
   const reportGroups = await versionControl.getReportGroups();
 
-  const writer = createWriter('./.reports');
+  const writer = createWriter('./.output/reports');
   for (const reportGroup of reportGroups) {
     logger.info(reportGroup, 'Creating report group');
     

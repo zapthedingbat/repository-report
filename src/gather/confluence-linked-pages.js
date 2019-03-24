@@ -3,7 +3,7 @@ const createCacheExclude = require("../lib/cache-exclude");
 const createGetHash = require("../lib/get-hash");
 const createCacheFetch = require("../lib/cache-fetch");
 
-const cacheDir = joinPath(__dirname, "../../.cache-confluence");
+const cacheDir = joinPath(__dirname, "../../.output/cache/confluence");
 const cacheExclude = createCacheExclude([]);
 const getHash = createGetHash([]);
 const cacheFetch = createCacheFetch(cacheDir, getHash, cacheExclude);

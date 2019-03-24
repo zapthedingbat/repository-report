@@ -1,0 +1,16 @@
+{
+  "check-coverage": false,
+  "include": [
+    "src/**/*.js"
+  ],
+  "exclude": [
+    "test/**/*.spec.js"
+  ],
+  "cache": false,
+  "reporter":[
+    "text",
+    "html"
+  ],
+  "temp-directory": "./.output/coverage-temp",
+  "report-dir": "./.output/coverage"
+}

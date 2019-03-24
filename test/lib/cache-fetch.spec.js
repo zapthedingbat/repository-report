@@ -22,7 +22,6 @@ describe("Cache fetch", function() {
     let cachePredicate;
 
     beforeEach(function () {
-      this.timeout = 30000;
       mockFs = {
         exists: sandbox.stub(),
         mkdirSync: sandbox.stub(),

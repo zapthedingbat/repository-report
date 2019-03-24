@@ -1,13 +1,8 @@
-node_modules
-npm-debug.log
+.editorconfig
 .env
 .keys
-.cache
-.cache-confluence
-.reports
-.nyc_output
-
-# IDE Settings
-.editorconfig
-.vscode
 .nvmrc
+.output
+.vscode
+node_modules
+npm-debug.log

@@ -7,8 +7,6 @@ describe("Render HTML report", function() {
   let html;
   
   before(function () {
-    this.enableTimeouts = true;
-    this.timeout = 30000;
     const classifications = [{
       details: {
         name: 'test-failing-classification',
@@ -47,8 +45,7 @@ describe("Render HTML report", function() {
   });
 
   it("should match the report snapshot", function () {
-    this.enableTimeouts = true;
-    this.timeout = 30000;
+    this.timeout(60000);
     const group = {
       name: 'test group name'
     };

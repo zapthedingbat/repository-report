@@ -10,7 +10,7 @@ const exists = promisify(fs.exists);
 
 module.exports = exports = function create(cachePath, getHash, cachePredicate) {
   if (!fs.existsSync(cachePath)) {
-    fs.mkdirSync(cachePath);
+    fs.mkdirSync(cachePath, { recursive: true });
   }
 
   return async function cachedFetch(input, init) {
