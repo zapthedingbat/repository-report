@@ -12,13 +12,17 @@ jobs:
           command: docker build --rm=false -t zapthedingbat/repository-report:$CIRCLE_SHA1 .
       - run:
           name: Copy output artifacts
-          command: docker cp $(docker ps -a -q -l -f "label=image=builder"):/home/node/app/.output /tmp/.output
+          command: |
+            BUILDER_CONTAINER=$(docker ps -a -q -l -f "label=image=builder")
+            echo $BUILDER_CONTAINER
+            docker cp $BUILDER_CONTAINER:/home/node/app/.output /tmp/.output
+            ls -al /tmp/.output
       - store_test_results:
           path: /tmp/.output/test-results
       - deploy:
           name: Publish image (on master branch)
           command: |
-            if [ "$ {CIRCLE_BRANCH}" == "master" ]; then
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker tag zapthedingbat/repository-report:$CIRCLE_SHA1 zapthedingbat/repository-report:latest
               docker push zapthedingbat/repository-report
