@@ -19,6 +19,7 @@ jobs:
           path: /tmp/.output/test-results
       - store_artifacts:
           path: /tmp/.output/coverage
+          destination: coverage
       - deploy:
           name: Publish image (on master branch)
           command: |
@@ -56,6 +57,7 @@ jobs:
           command: docker cp app:/home/node/app/.output /tmp/.output
       - store_artifacts:
           path: /tmp/.output/reports
+          destination: reports
 workflows:
   version: 2
   build:
