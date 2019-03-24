@@ -45,12 +45,11 @@ jobs:
       - run:
           name: Copy artifacts
           command: |
-            docker cp app:/home/node/app/.reports /tmp/.reports
-            docker cp app:/home/node/app/.coverage /tmp/.coverage
+            docker cp app:/home/node/app/.output/reports /tmp/.output
       - store_test_results:
-          path: /tmp/.coverage
+          path: /tmp/.output/test-results
       - store_artifacts:
-          path: /tmp/.reports
+          path: /tmp/.output/reports
 workflows:
   version: 2
   build:

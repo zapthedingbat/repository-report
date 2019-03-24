@@ -9,7 +9,8 @@ describe("GitHub", function () {
   let getAppToken;
   let createApi;
   let api;
-
+  let createCachedFetch;
+  
   before(function () {
     sandbox = sinon.createSandbox();
     api = {
@@ -21,11 +22,13 @@ describe("GitHub", function () {
     };
     createApi = sandbox.stub().returns(api);
     appToken = 'test app token';
-    getAppToken = sandbox.stub().resolves(appToken),
-      createGithub = proxyquire('../../../src/version-control/github', {
-        "../../../src/version-control/github/get-app-token": getAppToken,
-        "../../../src/version-control/github/api": createApi
-      })
+    getAppToken = sandbox.stub().resolves(appToken);
+    createCachedFetch = sandbox.stub();
+    createGithub = proxyquire('../../../src/version-control/github', {
+      "../../../src/lib/cache-fetch": createCachedFetch,
+      "../../../src/version-control/github/get-app-token": getAppToken,
+      "../../../src/version-control/github/api": createApi
+    })
   })
 
   describe("Creating", function () {

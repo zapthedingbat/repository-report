@@ -16,7 +16,8 @@
     "chai-as-promised": "^7.1.1",
     "eslint": "^5.15.0",
     "eslint-config-prettier": "^4.1.0",
-    "mocha": "^5.2.0",
+    "mocha": "^6.0.2",
+    "mocha-junit-reporter": "^1.18.0",
     "nyc": "^13.3.0",
     "pino-pretty": "^2.5.0",
     "prettier": "1.16.4",
@@ -25,7 +26,7 @@
   },
   "scripts": {
     "start": "node -r dotenv/config ./src/index",
-    "test": "nyc mocha test/**/*.spec.js"
+    "test": "nyc mocha"
   },
   "repository": {
     "type": "git",
@@ -41,6 +42,6 @@
   },
   "homepage": "https://github.com/zapthedingbat/github-tech-report#readme",
   "engines": {
-    "node": ">= 10.10.0"
+    "node": ">= 10.12.0"
   }
 }

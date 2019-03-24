@@ -55,7 +55,7 @@ describe("Worker", function() {
     process.env.GATHER = '';
     sandbox.stub(process.env, 'GATHER').value('test gather list');
     process.env.AUDIT = '';
-    sandbox.stub(process.env, 'AUDIT').value('test audit list');    
+    sandbox.stub(process.env, 'AUDIT').value('test audit list');
     process.env.RENDER = '';
     sandbox.stub(process.env, 'RENDER').value('test render list');
     process.env.VCS = '';
@@ -85,7 +85,7 @@ describe("Worker", function() {
     sinon.assert.calledWith(load, './render', 'test render list');
     sinon.assert.calledWith(createReportRenderer, renderers);
     sinon.assert.calledWith(createVersionControl, 'test vcs');
-    sinon.assert.calledWith(createWriter, './.reports');
+    sinon.assert.calledWith(createWriter, './.output/reports');
     sinon.assert.calledWith(reportBuilder, repositories, gather, auditor);
     sinon.assert.calledWith(render, reportGroups[0], report, writer);
     sinon.assert.calledWith(render, reportGroups[1], report, writer);

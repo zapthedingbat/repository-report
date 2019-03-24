@@ -1,4 +1,8 @@
-node_modules
+.editorconfig
 .env
 .keys
-.cache*
+.nvmrc
+.output
+.vscode
+node_modules
+npm-debug.log

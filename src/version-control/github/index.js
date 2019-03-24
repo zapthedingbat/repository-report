@@ -4,9 +4,8 @@ const createCacheExclude = require("../../lib/cache-exclude");
 const createGetHash = require('../../lib/get-hash');
 const getAppToken = require('./get-app-token');
 const createApi = require("./api");
-const logger = require("../../lib/logger");
 
-const cacheDir = path.join(__dirname, "../../../.cache");
+const cacheDir = path.join(__dirname, "../../../.output/cache/github");
 const cacheExclude = createCacheExclude([/\/access_tokens$/]);
 const getHash = createGetHash([/\/installation\/repositories/]);
 const cachedFetch = createCachedFetch(cacheDir, getHash, cacheExclude);

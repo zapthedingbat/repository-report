@@ -21,6 +21,7 @@ describe("File writer", function() {
           write: sandbox.stub().yields()
         };
         sandbox.stub(fs, "createWriteStream").returns(mockStream);
+        sandbox.stub(fs, "mkdirSync");
         sandbox.stub(path, "join").returns("mock path");
         const writer = createWriter("test directory");
 
