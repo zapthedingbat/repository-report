@@ -7,6 +7,10 @@
     "test/**/*.spec.js"
   ],
   "cache": false,
+  "text":[
+    "text",
+    "lcov"
+  ],
   "temp-directory": "./.output/coverage-temp",
   "report-dir": "./.output/coverage"
 }
