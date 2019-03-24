@@ -14,11 +14,11 @@ jobs:
           name: Copy output artifacts
           command: |
             BUILDER_CONTAINER=$(docker ps -a -q -l -f "label=image=builder")
-            echo $BUILDER_CONTAINER
             docker cp $BUILDER_CONTAINER:/home/node/app/.output /tmp/.output
-            ls -al /tmp/.output
       - store_test_results:
           path: /tmp/.output/test-results
+      - store_artifacts:
+          path: /tmp/.output/coverage
       - deploy:
           name: Publish image (on master branch)
           command: |
