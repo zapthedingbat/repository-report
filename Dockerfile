@@ -1,6 +1,6 @@
 # Build and test
 FROM node:10-alpine as builder
-LABEL stage=builder
+LABEL image=builder
 WORKDIR /home/node/app
 COPY package*.json ./
 RUN npm set progress=false && \

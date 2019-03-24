@@ -12,7 +12,7 @@ jobs:
           command: docker build --rm=false -t zapthedingbat/repository-report:$CIRCLE_SHA1 .
       - run:
           name: Copy output artifacts
-          command: docker cp $(docker ps -aq -f "label=stage=builder"):/home/node/app/.output /tmp/.output
+          command: docker cp $(docker ps -a -q -l -f "label=image=builder"):/home/node/app/.output /tmp/.output
       - store_test_results:
           path: /tmp/.output/test-results
       - deploy:
