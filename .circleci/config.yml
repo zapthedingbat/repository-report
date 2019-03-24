@@ -1,42 +1,72 @@
 version: 2
 jobs:
   build:
-    machine: true
+    docker:
+      - image: docker:stable-git
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - checkout
-      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
-      - run: docker build -t zapthedingbat/repository-report:$CIRCLE_SHA1 .
-      - run: docker tag zapthedingbat/repository-report:$CIRCLE_SHA1 zapthedingbat/repository-report:latest
-      - run: docker push zapthedingbat/repository-report
-  generate-report:
-    machine: true
+      - run:
+          name: docker build
+          command: docker build -t zapthedingbat/repository-report:$CIRCLE_SHA1 .
+  deploy:
+    docker:
+      - image: docker:stable-git
     steps:
-      - run: mkdir $(pwd)/.keys
-      - run: echo $GITHUB_PRIVATE_KEY | base64 --decode > $(pwd)/.keys/github-private-key.pem
-      - run: env > $(pwd)/.env
-      - run: mkdir /tmp/.reports
-      - run: chmod -R 777 /tmp/.reports
-      - run: >
-          docker run
-          --rm
-          --env-file=.env
-          -v $(pwd)/.keys:/home/app/.keys
-          -v /tmp/.reports:/home/app/.reports
-          zapthedingbat/repository-report
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Publish to docker hub
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker tag zapthedingbat/repository-report:$CIRCLE_SHA1 zapthedingbat/repository-report:latest
+            docker push zapthedingbat/repository-report
+  generate-report:
+    docker:
+      - image: docker:stable-git
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Write environment config to file
+          command: env > $(pwd)/.env
+      - run:
+          name: Write github private key
+          command: |
+            mkdir $(pwd)/.keys
+            echo $GITHUB_PRIVATE_KEY | base64 --decode > $(pwd)/.keys/github-private-key.pem
+            docker create -v /home/node/app/.keys --name keys alpine /bin/true
+            docker cp $(pwd)/.keys/github-private-key.pem keys:/home/node/app/.keys
+      - run:
+          name: Generate report
+          command: >
+            docker run
+            --name app
+            --env-file=.env
+            --volumes-from keys
+            zapthedingbat/repository-report
+      - run:
+          name: Copy artifacts
+          command: |
+            docker cp app:/home/node/app/.reports /tmp/.reports
       - store_artifacts:
           path: /tmp/.reports
 workflows:
   version: 2
   build:
     jobs:
-      - build:
+      - build
+      - deploy:
           filters:
             branches:
               only:
                 - master
-      - generate-report:
           requires:
             - build
+      - generate-report:
+          requires:
+            - deploy
   nightly:
     triggers:
       - schedule:
