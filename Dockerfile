@@ -7,6 +7,7 @@ RUN npm set progress=false && \
     npm config set depth 0 && \
     npm install --development
 COPY ./ ./
+ENV CI=true
 RUN npm run test
 
 # Production
