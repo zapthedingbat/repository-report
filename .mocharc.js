@@ -3,7 +3,7 @@
 const isCi = process.env.CI === 'true';
 const reporter = isCi ? "mocha-junit-reporter" : "spec"
 const reporterOption = isCi ? [
-  'mochaFile=./.output/test-results.xml',
+  'mochaFile=./.output/test-results/results.xml',
 ] : [];
 
 module.exports = {
