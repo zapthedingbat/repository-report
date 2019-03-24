@@ -45,7 +45,7 @@ jobs:
       - run:
           name: Copy artifacts
           command: |
-            docker cp app:/home/node/app/.output/reports /tmp/.output
+            docker cp app:/home/node/app/.output /tmp/.output
       - store_test_results:
           path: /tmp/.output/test-results
       - store_artifacts:
