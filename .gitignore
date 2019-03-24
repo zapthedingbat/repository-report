@@ -5,9 +5,8 @@ npm-debug.log
 .cache
 .cache-confluence
 .reports
-.nyc_output
-
-# IDE Settings
+.coverage
+.coverage-temp
 .editorconfig
 .vscode
 .nvmrc

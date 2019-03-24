@@ -25,8 +25,7 @@
   },
   "scripts": {
     "start": "node -r dotenv/config ./src/index",
-    "test": "nyc mocha test/**/*.spec.js",
-    "report": "node ./scripts/report.js"
+    "test": "nyc mocha test/**/*.spec.js"
   },
   "repository": {
     "type": "git",

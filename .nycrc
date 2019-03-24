@@ -1,0 +1,18 @@
+{
+  "check-coverage": false,
+  "per-file": true,
+  "include": [
+    "src/**/*.js"
+  ],
+  "exclude": [
+    "test/**/*.spec.js"
+  ],
+  "reporter": [
+    "text-summary",
+    "lcov"
+  ],
+  "cache": true,
+  "all": true,
+  "temp-dir": "./.coverage-temp",
+  "report-dir": "./.coverage"
+}
