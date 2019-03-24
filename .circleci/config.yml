@@ -8,10 +8,15 @@ jobs:
           docker_layer_caching: true
       - checkout
       - run:
-          name: docker build
-          command: docker build -t zapthedingbat/repository-report:$CIRCLE_SHA1 .
+          name: Build docker image
+          command: docker build --rm=false -t zapthedingbat/repository-report:$CIRCLE_SHA1 .
+      - run:
+          name: Copy output artifacts
+          command: docker cp $(docker ps -aq -f "label=stage=builder"):/home/node/app/.output /tmp/.output
+      - store_test_results:
+          path: /tmp/.output/test-results
       - deploy:
-          name: Publish to docker hub
+          name: Publish image (on master branch)
           command: |
             if [ "$ {CIRCLE_BRANCH}" == "master" ]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
@@ -43,11 +48,8 @@ jobs:
             --volumes-from keys
             zapthedingbat/repository-report
       - run:
-          name: Copy artifacts
-          command: |
-            docker cp app:/home/node/app/.output /tmp/.output
-      - store_test_results:
-          path: /tmp/.output/test-results
+          name: Copy output artifacts
+          command: docker cp app:/home/node/app/.output /tmp/.output
       - store_artifacts:
           path: /tmp/.output/reports
 workflows:
