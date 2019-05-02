@@ -4,7 +4,7 @@
   "description": "Provides reporting of technologies in use across a github organisation.",
   "main": "index.js",
   "dependencies": {
-    "dotenv": "^7.0.0",
+    "dotenv": "^8.0.0",
     "html-minifier": "^4.0.0",
     "jsonwebtoken": "^8.4.0",
     "node-fetch": "^2.2.1",
