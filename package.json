@@ -22,7 +22,7 @@
     "pino-pretty": "3.0.0",
     "prettier": "1.17.0",
     "proxyquire": "2.1.0",
-    "sinon": "7.3.2"
+    "sinon": "8.1.1"
   },
   "scripts": {
     "start": "node -r dotenv/config ./src/index",
