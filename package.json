@@ -7,7 +7,7 @@
     "dotenv": "^7.0.0",
     "html-minifier": "^4.0.0",
     "jsonwebtoken": "^8.4.0",
-    "node-fetch": "^2.2.1",
+    "node-fetch": "^2.6.1",
     "octicons": "^8.5.0",
     "pino": "^5.11.1"
   },
