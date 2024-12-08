@@ -1,5 +1,5 @@
 # Build and test
-FROM node:10-alpine as builder
+FROM node:22-alpine as builder
 LABEL image=builder
 WORKDIR /home/node/app
 COPY package*.json ./
@@ -11,7 +11,7 @@ ENV CI=true
 RUN npm run test
 
 # Production
-FROM node:10-alpine as production
+FROM node:22-alpine as production
 RUN mkdir -p /home/node/app && chown -R node:node /home/node/app
 WORKDIR /home/node/app
 COPY package*.json ./
